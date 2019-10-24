@@ -1,0 +1,26 @@
+name: test
+channels:
+  - conda-forge
+  - omnia/label/dev
+  - omnia
+  - defaults
+
+dependencies:
+    # Base depends
+  - python
+  - pip
+  - tensorflow
+    # Testing
+  - pytest
+  - pytest-cov
+  - numpy
+  - rdkit
+  - scipy
+  - pytest-cov
+  - pip:
+    - lark-parser
+    - six
+    - torch
+    - torchani==0.9
+    - torchvision
+    - codecov
