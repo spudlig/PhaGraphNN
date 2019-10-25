@@ -27,20 +27,20 @@ def readChemblXls(path_to_xls,col_entries = [0,7,10],sheet_index=0,n_entries=100
     '''
     wb = xlrd.open_workbook(path_to_xls)
     sheet = wb.sheet_by_index(0)
-    nrow = n_entries
-    rown = 0
+    nr_row = n_entries
+    row_nr = 0
     colEntries = col_entries
     
     data = []
     try:
-        for row in range(nrow):
+        for row in range(nr_row):
             single_entry = []
             for col_entry in col_entries:
                 single_entry.append(sheet.cell_value(row, col_entry))
-            rown += 1
+            row_nr += 1
             data.append(single_entry)
     except Exception as e:
-        print("End of xls file with",rown,"entries.")
+        print("End of xls file with",row_nr,"entries.")
         pass
     
     return data
@@ -131,6 +131,133 @@ def CDPLmolFromSdf(sdf_path,conformation):
         return _CDPLgenerateConformation(mol)
     return mol
 
+def CDPLphaGenerator(protein,ligand,pha_type):
+    '''
+    generates the pharmacophore for either the ligand, the environment or
+    the interaction between them.
+    Input: \n
+    protein (CDPL Fragment): the CDPL protein fragment  \n
+    ligand (CDPL BasicMolecule): a molecule or a ligand in the corresponding
+     protein pocket  \n
+    pha_type (string): either "lig_only", "env_only" or None - then its the
+    interaction pharamcophore  \n
+    Return: \n
+    (CDPL BasicPharmacophore): the corresponding pharmacophore
+     '''
+    lig_pharm = None
+    if pha_type is 'lig_only':
+        lig_pharm = self._CDPLgeneratePha(ligand,pha_type)
+        return lig_pharm
+    Chem.perceiveSSSR(protein, True)
+    env_pharm = None
+    if pha_type is 'env_only':
+        env_pharm = self._CDPLgeneratePha(protein)
+        return env_pharm
+    
+    mapping = Pharm.FeatureMapping()
+
+    Pharm.DefaultInteractionAnalyzer().analyze(lig_pharm, env_pharm, mapping)
+    int_pharm = Pharm.BasicPharmacophore()
+    Pharm.buildInteractionPharmacophore(int_pharm, mapping)
+    return int_pharm
+
+def CDPLdownloadProteinFile(pdb_four_letter_code):
+    '''
+    downloads the PDB with the corresponding four letter code.
+    Input:\n
+    pdb_four_letter_code (String): the pdb_four_letter_code of the protein structure -
+    it then tries to download the corresponding protein structure. \n
+    Return: \n
+    (CDPL BasicMolecule): the protein structure \n
+    '''
+    #TODO
+    return pdb_mol
+
+def CDPLreadProteinFile(path_to_pdb,lig_three_letter_code,radius,remove_water=True):
+    '''
+    Reads a pdb file from a path
+    Input: \n
+    path_to_pdb (String): the path to the protein structure  \n
+    lig_three_letter_code (string): the three letter code for the ligand \n
+    radius (float): the radius within every residue is being extracted for the environment fragment.
+    The origin of the radius is the defined ligand. \n
+    Return: \n
+    (CDPL BasicMolecule): the protein structure \n
+    (CDPL Fragment): the environment residues within the defined radius of the ligand \n
+    (CDPL Fragment): the defined ligand \n
+    '''
+    pdb_mol = _CDPLreadFromPDBFile(path_to_pdb)
+    environment, ligand = _CDPLextractProteinFragments(pdb_mol,lig_three_letter_code,remove_water,radius=radius)
+
+    return pdb_mol, environment, ligand
+
+
+def _CDPLextractProteinFragments(pdb_mol, lig_three_letter_code,remove_water, radius=6.0):
+    lig = Chem.Fragment()
+
+    _CDPLcalcProteinProperties(pdb_mol)
+
+    # extract ligand
+    for atom in pdb_mol.atoms:
+        if Biomol.getResidueCode(atom) == lig_three_letter_code:
+            Biomol.extractResidueSubstructure(atom, pdb_mol, lig, False)
+    if lig.numAtoms == 0:
+        raise ValueError("The defined three letter code is not existing:",lig_three_letter_code)
+    # extract environment
+    env = Chem.Fragment()
+    Biomol.extractEnvironmentResidues(lig, pdb_mol, env, float(radius))
+    
+    # remove water
+    if remove_water:
+        to_remove = list()
+        for atom in env.atoms:
+            if Biomol.getResidueCode(atom) == 'HOH':
+                to_remove.append(atom)
+        for atom in to_remove:
+            env.removeAtom(env.getAtomIndex(atom))
+
+    return env,lig
+
+
+def _CDPLgeneratePha(mol,lig_only):
+    '''
+    PRIVAT METHOD
+    generates the pharmacophore for the molecule and is used by the CDPLphaGenerator.
+    Input: \n
+    mol (CDPL BasicMolecule): the molecule the pharmacophore needs to be generated for
+    lig_only (string): either True, then there are is no hydrogens coordinates being 
+    calculated  \n
+    Return: \n
+    (CDPL BasicPharmacophore): the corresponding pharmacophore
+     '''
+    if pha_type is not 'lig_only': #TODO What exactly should be in the config for the pha generation?
+        Chem.generateHydrogen3DCoordinates(mol, True)
+    pharm = Pharm.BasicPharmacophore()
+    pharm_generator = Pharm.DefaultPharmacophoreGenerator(True)
+    pharm_generator.generate(mol, pharm)
+    return pharm
+
+def _CDPLreadFromPDBFile(pdb_file):
+    '''
+    PRIVAT METHOD
+    reads a pdb file and is used by the CDPLreadProteinFile method.
+    Input: \n
+    pdb_file (string): the path to the pdb file  \n
+    Return: \n
+    (CDPL BasicMolecule): the corresponding pdb molecule
+     '''
+    ifs = Base.FileIOStream(pdb_file, 'r')
+    pdb_reader = Biomol.PDBMoleculeReader(ifs)
+    pdb_mol = Chem.BasicMolecule()
+
+    Biomol.setPDBApplyDictAtomBondingToNonStdResiduesParameter(pdb_reader, False) #TODO Should this be there for the pdb readin? or also in the config?
+
+    if not pdb_reader.read(pdb_mol):
+        print("COULD NOT READ PDB",pdb_file)
+        return False
+
+    return pdb_mol
+
 def _generateConformation(mol):
     ''' 
     PRIVATE METHOD
@@ -144,9 +271,10 @@ def _generateConformation(mol):
     m_conf = RDChem.AddHs(mol)
     RDAllChem.EmbedMolecule(m_conf)
     RDAllChem.MMFFOptimizeMolecule(m_conf)
+
     return m_conf
 
-def _CDPLgenerateConformation(cdplMol):
+def _CDPLgenerateConformation(cdpl_mol):
     '''
     PRIVAT METHOD
     configures a CDPL Molecule for conformation generation. \n
@@ -156,31 +284,31 @@ def _CDPLgenerateConformation(cdplMol):
     (CDPL BasicMolecule): the corresponding random conf. for the input BasicMolecule
      '''
 
-    _CDPLconfigForConformation(cdplMol)
+    _CDPLconfigForConformation(cdpl_mol) #TODO What exactly should be in the config for the cmp generation?
     cg = ConfGen.RandomConformerGenerator()
     coords = Math.Vector3DArray()
     i = 0
 
     cg.strictMMFF94AtomTyping = False
 
-    ConfGen.prepareForConformerGeneration(cdplMol)
+    ConfGen.prepareForConformerGeneration(cdpl_mol)
 
-    coords.resize(cdplMol.numAtoms, Math.Vector3D())
+    coords.resize(cdpl_mol.numAtoms, Math.Vector3D())
 
-    cg.setup(cdplMol)
+    cg.setup(cdpl_mol)
 
     if cg.generate(coords) != ConfGen.RandomConformerGenerator.SUCCESS:
         print(sys.stderr, '! Conformer generation failed !')
 
-    Chem.set3DCoordinates(cdplMol, coords)
+    Chem.set3DCoordinates(cdpl_mol, coords)
 
     return cdplMol
 
 
-def _CDPLconfigForConformation(mol):
+def _CDPLconfigForConformation(mol): # TODO is this the right way to handle ligands for conf. generation?
     '''
     PRIVAT METHOD
-    configures a CDPL Molecule for conformation generation. \n
+    configures a CDPL BasicMolecule for conformation generation. \n
     Input: \n
     mol (CDPL BasicMolecule): a CDPL BasicMolecule \n
     Return: \n
@@ -201,4 +329,21 @@ def _CDPLconfigForConformation(mol):
 
     Chem.generate2DCoordinates(mol, False)
     Chem.generateBond2DStereoFlags(mol, True)
+
+def _CDPLcalcProteinProperties(pdb_mol): # TODO is this the right way to handle protein structures?
+    '''
+    PRIVAT METHOD
+    configures a CDPL BasicMolecule for a protein structure. Is used in the _CDPLextractProteinFragments method \n
+    Input: \n
+    pdb_mol (CDPL BasicMolecule): a CDPL BasicMolecule representing the protein structure \n
+    '''
+    Chem.calcImplicitHydrogenCounts(pdb_mol, True)
+    Chem.perceiveHybridizationStates(pdb_mol, True)        
+    Chem.makeHydrogenComplete(pdb_mol)
+    Chem.setAtomSymbolsFromTypes(pdb_mol, False)        
+    Chem.calcImplicitHydrogenCounts(pdb_mol, True)
+    Chem.setRingFlags(pdb_mol, True)
+    Chem.setAromaticityFlags(pdb_mol, True)
+    Chem.generateHydrogen3DCoordinates(pdb_mol, True)   
+    Biomol.setHydrogenResidueSequenceInfo(pdb_mol, False) 
 

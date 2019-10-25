@@ -1,0 +1,244 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+ALL_FDIM	../phagraphnn/PhaGAT.py	/^ALL_FDIM = FEATURE_FDIM+EDGE_FDIM$/;"	kind:variable	line:8
+ALL_FDIM	../phagraphnn/PhaMPN.py	/^ALL_FDIM = FEATURE_FDIM+EDGE_FDIM$/;"	kind:variable	line:8
+Base	../phagraphnn/PhaGraph.py	/^import CDPL.Base as Base$/;"	kind:namespace	line:4
+Base	../phagraphnn/utilities.py	/^import CDPL.Base as Base$/;"	kind:namespace	line:9
+Biomol	../phagraphnn/PhaGraph.py	/^import CDPL.Biomol as Biomol$/;"	kind:namespace	line:2
+Biomol	../phagraphnn/utilities.py	/^import CDPL.Biomol as Biomol$/;"	kind:namespace	line:6
+CDPL	../phagraphnn/PhaGraph.py	/^import CDPL.Base as Base$/;"	kind:namespace	line:4
+CDPL	../phagraphnn/PhaGraph.py	/^import CDPL.Biomol as Biomol$/;"	kind:namespace	line:2
+CDPL	../phagraphnn/PhaGraph.py	/^import CDPL.Chem as Chem$/;"	kind:namespace	line:1
+CDPL	../phagraphnn/PhaGraph.py	/^import CDPL.ConfGen as ConfGen$/;"	kind:namespace	line:5
+CDPL	../phagraphnn/PhaGraph.py	/^import CDPL.Math as Math$/;"	kind:namespace	line:6
+CDPL	../phagraphnn/PhaGraph.py	/^import CDPL.Pharm as Pharm$/;"	kind:namespace	line:3
+CDPL	../phagraphnn/utilities.py	/^import CDPL.Base as Base$/;"	kind:namespace	line:9
+CDPL	../phagraphnn/utilities.py	/^import CDPL.Biomol as Biomol$/;"	kind:namespace	line:6
+CDPL	../phagraphnn/utilities.py	/^import CDPL.Chem as Chem$/;"	kind:namespace	line:5
+CDPL	../phagraphnn/utilities.py	/^import CDPL.ConfGen as ConfGen$/;"	kind:namespace	line:10
+CDPL	../phagraphnn/utilities.py	/^import CDPL.Math as Math$/;"	kind:namespace	line:11
+CDPL	../phagraphnn/utilities.py	/^import CDPL.Pharm as Pharm$/;"	kind:namespace	line:8
+CDPL	../phagraphnn/utilities.py	/^import CDPL.Util as Util$/;"	kind:namespace	line:7
+CDPLmolFromSdf	../phagraphnn/utilities.py	/^def CDPLmolFromSdf(sdf_path,conformation):$/;"	kind:function	line:113
+CDPLmolFromSmiles	../phagraphnn/utilities.py	/^def CDPLmolFromSmiles(smiles_path,conformation):$/;"	kind:function	line:90
+CDPLphaGenerator	../phagraphnn/utilities.py	/^def CDPLphaGenerator(protein,ligand,pha_type):$/;"	kind:function	line:134
+CDPLreadProteinFile	../phagraphnn/utilities.py	/^def CDPLreadProteinFile(path_to_pdb,four_letter_code = None):$/;"	kind:function	line:164
+CONDA_BIN	../devtools/scripts/create_conda_env.py	/^            CONDA_BIN = os.path.dirname(os.environ['CONDA_EXE'])$/;"	kind:variable	line:20
+Chem	../phagraphnn/PhaGraph.py	/^import CDPL.Chem as Chem$/;"	kind:namespace	line:1
+Chem	../phagraphnn/utilities.py	/^import CDPL.Chem as Chem$/;"	kind:namespace	line:5
+Chem	../phagraphnn/utilities.py	/^import rdkit.Chem.AllChem as RDAllChem$/;"	kind:namespace	line:13
+ConfGen	../phagraphnn/PhaGraph.py	/^import CDPL.ConfGen as ConfGen$/;"	kind:namespace	line:5
+ConfGen	../phagraphnn/utilities.py	/^import CDPL.ConfGen as ConfGen$/;"	kind:namespace	line:10
+EDGE_FDIM	../phagraphnn/PhaGAT.py	/^EDGE_FDIM = 1$/;"	kind:variable	line:7
+EDGE_FDIM	../phagraphnn/PhaMPN.py	/^EDGE_FDIM = 1$/;"	kind:variable	line:7
+ELEM_LIST	../phagraphnn/PhaGAT.py	/^ELEM_LIST =[1,2,3,4,5,6,'unk']$/;"	kind:variable	line:5
+ELEM_LIST	../phagraphnn/PhaGraph.py	/^ELEM_LIST =[0,1,2,3,4,5,6,7] #0=unk,1=H,2=AR,3=NI,4=PI, 5=HBD,6=HBA,7=XV$/;"	kind:variable	line:14
+ELEM_LIST	../phagraphnn/PhaMPN.py	/^ELEM_LIST =[0,1,2,3,4,5,6,7] #0=unk,1=H,2=AR,3=NI,4=PI, 5=HBD,6=HBA,7=XV$/;"	kind:variable	line:4
+FEATURE_FDIM	../phagraphnn/PhaGAT.py	/^FEATURE_FDIM = len(ELEM_LIST)$/;"	kind:variable	line:6
+FEATURE_FDIM	../phagraphnn/PhaMPN.py	/^FEATURE_FDIM = len(ELEM_LIST)$/;"	kind:variable	line:6
+GATLayer	../phagraphnn/PhaGAT.py	/^class GATLayer(tf.keras.Model):$/;"	kind:class	line:38
+MAX_NB	../phagraphnn/PhaGAT.py	/^MAX_NB = 15$/;"	kind:variable	line:9
+MAX_NB	../phagraphnn/PhaMPN.py	/^MAX_NB = 50$/;"	kind:variable	line:9
+MAX_NR_FEATURES	../phagraphnn/PhaGAT.py	/^MAX_NR_FEATURES = 35$/;"	kind:variable	line:11
+MAX_NR_SURROUND_FEATURES	../phagraphnn/PhaGAT.py	/^MAX_NR_SURROUND_FEATURES = 30$/;"	kind:variable	line:10
+Math	../phagraphnn/PhaGraph.py	/^import CDPL.Math as Math$/;"	kind:namespace	line:6
+Math	../phagraphnn/utilities.py	/^import CDPL.Math as Math$/;"	kind:namespace	line:11
+PhaGAT.py	../phagraphnn/PhaGAT.py	1;"	kind:file	line:1
+PhaGraph	../phagraphnn/PhaGraph.py	/^class PhaGraph():$/;"	kind:class	line:27
+PhaGraph	../tests/test_phagraphnn.py	/^    from PhaGraph import PhaGraph,PhaNode$/;"	kind:namespace	line:57
+PhaGraph	../tests/test_phagraphnn.py	/^    from PhaGraph import PhaGraph,PhaNode$/;"	kind:namespace	line:72
+PhaGraph	../tests/test_phagraphnn.py	/^    from PhaGraph import PhaGraph,PhaNode$/;"	kind:namespace	line:86
+PhaGraph.py	../phagraphnn/PhaGraph.py	1;"	kind:file	line:1
+PhaMPN	../phagraphnn/PhaMPN.py	/^class PhaMPN(tf.keras.Model):$/;"	kind:class	line:55
+PhaMPN.py	../phagraphnn/PhaMPN.py	1;"	kind:file	line:1
+PhaNode	../phagraphnn/PhaGraph.py	/^class PhaNode():$/;"	kind:class	line:16
+PhaNode	../tests/test_phagraphnn.py	/^    from PhaGraph import PhaGraph,PhaNode$/;"	kind:namespace	line:57
+PhaNode	../tests/test_phagraphnn.py	/^    from PhaGraph import PhaGraph,PhaNode$/;"	kind:namespace	line:72
+PhaNode	../tests/test_phagraphnn.py	/^    from PhaGraph import PhaGraph,PhaNode$/;"	kind:namespace	line:86
+Pharm	../phagraphnn/PhaGraph.py	/^import CDPL.Pharm as Pharm$/;"	kind:namespace	line:3
+Pharm	../phagraphnn/utilities.py	/^import CDPL.Pharm as Pharm$/;"	kind:namespace	line:8
+PyYAML	../devtools/scripts/create_conda_env.py	/^    import yaml  # PyYAML$/;"	kind:namespace	line:11
+RDAllChem	../phagraphnn/utilities.py	/^import rdkit.Chem.AllChem as RDAllChem$/;"	kind:namespace	line:13
+RDChem	../phagraphnn/utilities.py	/^from rdkit import Chem as RDChem$/;"	kind:namespace	line:14
+Ruamel	../devtools/scripts/create_conda_env.py	/^        import ruamel_yaml as yaml  # Ruamel YAML$/;"	kind:namespace	line:15
+TemporaryDirectory	../devtools/scripts/create_conda_env.py	/^from tempfile import TemporaryDirectory$/;"	kind:namespace	line:7
+Util	../phagraphnn/utilities.py	/^import CDPL.Util as Util$/;"	kind:namespace	line:7
+YAML	../devtools/scripts/create_conda_env.py	/^        import ruamel_yaml as yaml  # Ruamel YAML$/;"	kind:namespace	line:15
+_CDPLconfigForConformation	../phagraphnn/utilities.py	/^def _CDPLconfigForConformation(mol):$/;"	kind:function	line:263
+_CDPLgenerateConformation	../phagraphnn/utilities.py	/^def _CDPLgenerateConformation(cdpl_mol):$/;"	kind:function	line:232
+_CDPLgeneratePha	../phagraphnn/utilities.py	/^def _CDPLgeneratePha(mol,lig_only):$/;"	kind:function	line:177
+__email__	../phagraphnn/__init__.py	/^__email__ = 'oliver.wieder@univie.ac.at'$/;"	kind:variable	line:6
+__init__	../phagraphnn/PhaGAT.py	/^    def __init__(self, in_dim, out_dim,dropout_rate):$/;"	kind:member	line:39
+__init__	../phagraphnn/PhaGraph.py	/^    def __init__(self):$/;"	kind:member	line:37
+__init__	../phagraphnn/PhaGraph.py	/^    def __init__(self,feature_type):$/;"	kind:member	line:21
+__init__	../phagraphnn/PhaMPN.py	/^    def __init__(self, hidden_size, depth):$/;"	kind:member	line:63
+__init__.py	../phagraphnn/__init__.py	1;"	kind:file	line:1
+__init__.py	../tests/__init__.py	1;"	kind:file	line:1
+__version__	../phagraphnn/__init__.py	/^__version__ = '0.1.0'$/;"	kind:variable	line:7
+_calcDistMatrix	../phagraphnn/PhaGraph.py	/^    def _calcDistMatrix(self):$/;"	kind:member	line:209
+_calcMolProperties	../phagraphnn/PhaGraph.py	/^    def _calcMolProperties(pdb_mol):$/;"	kind:member	line:240
+_generateConformation	../phagraphnn/utilities.py	/^def _generateConformation(mol):$/;"	kind:function	line:216
+_generate_edges	../phagraphnn/PhaGraph.py	/^    def _generate_edges(self):$/;"	kind:member	line:170
+_generate_nodes	../phagraphnn/PhaGraph.py	/^    def _generate_nodes(self,env,lig,pha_type):$/;"	kind:member	line:183
+_readFromPDBFile	../phagraphnn/utilities.py	/^def _readFromPDBFile(pdb_file):$/;"	kind:function	line:195
+argparse	../devtools/scripts/create_conda_env.py	/^import argparse$/;"	kind:namespace	line:1
+argparse	../phagraphnn/cli.py	/^import argparse$/;"	kind:namespace	line:4
+args	../devtools/scripts/create_conda_env.py	/^args = parser.parse_args()$/;"	kind:variable	line:57
+attention_score	../phagraphnn/PhaGAT.py	/^    def attention_score(self, f_lig,f_env):$/;"	kind:member	line:46
+author	../docs/conf.py	/^author = u"Oliver Wieder"$/;"	kind:variable	line:52
+author	../setup.py	/^    author="Oliver Wieder",$/;"	kind:variable	line:21
+author_email	../setup.py	/^    author_email='oliver.wieder@univie.ac.at',$/;"	kind:variable	line:22
+call	../phagraphnn/PhaGAT.py	/^    def call(self, z_feature,z_others,scope):$/;"	kind:member	line:74
+call	../phagraphnn/PhaMPN.py	/^    def call(self, features,fedges,agraph,egraph,scope):$/;"	kind:member	line:72
+classifiers	../setup.py	/^    classifiers=[$/;"	kind:variable	line:24
+cli.py	../phagraphnn/cli.py	1;"	kind:file	line:1
+conda_path	../devtools/scripts/create_conda_env.py	/^    conda_path = os.environ["CONDA_EXE"]$/;"	kind:variable	line:79
+conda_path	../devtools/scripts/create_conda_env.py	/^    conda_path = shutil.which("conda")$/;"	kind:variable	line:81
+conf.py	../docs/conf.py	1;"	kind:file	line:1
+connected	../phagraphnn/PhaGraph.py	/^    def connected(self, node1, node2):$/;"	kind:member	line:95
+contextmanager	../devtools/scripts/create_conda_env.py	/^from contextlib import contextmanager$/;"	kind:namespace	line:8
+copy	../phagraphnn/PhaGAT.py	/^import copy$/;"	kind:namespace	line:3
+copyright	../docs/conf.py	/^copyright = u"2019, Oliver Wieder"$/;"	kind:variable	line:51
+create_conda_env.py	../devtools/scripts/create_conda_env.py	1;"	kind:file	line:1
+create_var	../phagraphnn/PhaGAT.py	/^def create_var(tensor, requires_grad=None):$/;"	kind:function	line:24
+create_var	../phagraphnn/PhaMPN.py	/^def create_var(tensor, requires_grad=None):$/;"	kind:function	line:22
+deepcopy	../phagraphnn/PhaGraph.py	/^from copy import deepcopy$/;"	kind:namespace	line:10
+description	../setup.py	/^    description="Pharmacophoreh ",$/;"	kind:variable	line:37
+distance	../phagraphnn/PhaGraph.py	/^    def distance(self, node1, node2):$/;"	kind:member	line:74
+distance_idx	../phagraphnn/PhaGraph.py	/^    def distance_idx(self, idx1, idx2):$/;"	kind:member	line:84
+edge_features	../phagraphnn/PhaGAT.py	/^def edge_features(bond):$/;"	kind:function	line:21
+edge_features	../phagraphnn/PhaMPN.py	/^def edge_features(bond):$/;"	kind:function	line:19
+entry_points	../setup.py	/^    entry_points={$/;"	kind:variable	line:38
+exclude_patterns	../docs/conf.py	/^exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']$/;"	kind:variable	line:73
+extensions	../docs/conf.py	/^extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode']$/;"	kind:variable	line:35
+find_packages	../setup.py	/^from setuptools import setup, find_packages$/;"	kind:namespace	line:6
+generate	../phagraphnn/PhaGraph.py	/^    def generate(self,env,lig,pha_type):$/;"	kind:member	line:165
+generateFromPDBFile	../phagraphnn/PhaGraph.py	/^    def generateFromPDBFile(self, pdb_mol, lig_code,pha_type, radius=6.0):$/;"	kind:member	line:139
+generateFromSmiles	../phagraphnn/PhaGraph.py	/^    def generateFromSmiles(self,smiles,pha_type="lig_only"):$/;"	kind:member	line:126
+getAffinity	../phagraphnn/PhaMPN.py	/^def getAffinity(affinity_string):$/;"	kind:function	line:36
+getName	../phagraphnn/PhaGraph.py	/^    def getName(self):$/;"	kind:member	line:68
+getProperty	../phagraphnn/PhaGraph.py	/^    def getProperty(self,property_name):$/;"	kind:member	line:45
+get_features	../phagraphnn/PhaGAT.py	/^def get_features(feature):$/;"	kind:function	line:18
+get_features	../phagraphnn/PhaMPN.py	/^def get_features(feature):$/;"	kind:function	line:16
+glob	../devtools/scripts/create_conda_env.py	/^import glob$/;"	kind:namespace	line:4
+help	../devtools/scripts/create_conda_env.py	/^                    help='The file for the created Python environment')$/;"	kind:variable	line:55
+help	../devtools/scripts/create_conda_env.py	/^                    help='The name of the created Python environment')$/;"	kind:variable	line:51
+help	../devtools/scripts/create_conda_env.py	/^                    help='The version of the created Python environment')$/;"	kind:variable	line:53
+history	../setup.py	/^    history = history_file.read()$/;"	kind:variable	line:12
+html_static_path	../docs/conf.py	/^html_static_path = ['_static']$/;"	kind:variable	line:98
+html_theme	../docs/conf.py	/^html_theme = 'alabaster'$/;"	kind:variable	line:87
+htmlhelp_basename	../docs/conf.py	/^htmlhelp_basename = 'phagraphnndoc'$/;"	kind:variable	line:104
+include_package_data	../setup.py	/^    include_package_data=True,$/;"	kind:variable	line:46
+index_select_ND	../phagraphnn/PhaGAT.py	/^def index_select_ND(source, dim, index):$/;"	kind:function	line:30
+index_select_ND	../phagraphnn/PhaMPN.py	/^def index_select_ND(source, dim, index):$/;"	kind:function	line:28
+install_requires	../setup.py	/^    install_requires=requirements,$/;"	kind:variable	line:43
+keywords	../setup.py	/^    keywords='phagraphnn',$/;"	kind:variable	line:47
+language	../docs/conf.py	/^language = None$/;"	kind:variable	line:68
+latex_documents	../docs/conf.py	/^latex_documents = [$/;"	kind:variable	line:130
+latex_elements	../docs/conf.py	/^latex_elements = {$/;"	kind:variable	line:109
+license	../setup.py	/^    license="MIT license",$/;"	kind:variable	line:44
+loader	../devtools/scripts/create_conda_env.py	/^    loader = yaml.YAML(typ="safe").load  # typ="safe" avoids odd typing on output$/;"	kind:variable	line:33
+loader	../devtools/scripts/create_conda_env.py	/^    loader = yaml.load$/;"	kind:variable	line:12
+long_description	../setup.py	/^    long_description=readme + '\\n\\n' + history,$/;"	kind:variable	line:45
+main	../phagraphnn/cli.py	/^def main():$/;"	kind:function	line:8
+man_pages	../docs/conf.py	/^man_pages = [$/;"	kind:variable	line:141
+master_doc	../docs/conf.py	/^master_doc = 'index'$/;"	kind:variable	line:47
+math	../phagraphnn/PhaGraph.py	/^import math$/;"	kind:namespace	line:11
+math	../tests/test_phagraphnn.py	/^    import math$/;"	kind:namespace	line:87
+molFromSdf	../phagraphnn/utilities.py	/^def molFromSdf(sdf_path,conformation):$/;"	kind:function	line:68
+molFromSmiles	../phagraphnn/utilities.py	/^def molFromSmiles(smiles,conformation):$/;"	kind:function	line:49
+name	../setup.py	/^    name='phagraphnn',$/;"	kind:variable	line:48
+np	../phagraphnn/PhaGAT.py	/^import numpy as np$/;"	kind:namespace	line:2
+np	../phagraphnn/PhaGraph.py	/^import numpy as np$/;"	kind:namespace	line:8
+np	../phagraphnn/PhaMPN.py	/^import numpy as np$/;"	kind:namespace	line:2
+np	../phagraphnn/utilities.py	/^import numpy as np$/;"	kind:namespace	line:1
+onek_encoding_unk	../phagraphnn/PhaGAT.py	/^def onek_encoding_unk(x, allowable_set):$/;"	kind:function	line:13
+onek_encoding_unk	../phagraphnn/PhaMPN.py	/^def onek_encoding_unk(x, allowable_set):$/;"	kind:function	line:11
+os	../devtools/scripts/create_conda_env.py	/^import os$/;"	kind:namespace	line:2
+os	../docs/conf.py	/^import os$/;"	kind:namespace	line:21
+os	../phagraphnn/utilities.py	/^import os$/;"	kind:namespace	line:3
+os	../tests/test_phagraphnn.py	/^import sys, os$/;"	kind:namespace	line:11
+packages	../setup.py	/^    packages=find_packages(include=['phagraphnn', 'phagraphnn.*']),$/;"	kind:variable	line:49
+parser	../devtools/scripts/create_conda_env.py	/^parser = argparse.ArgumentParser(description='Creates a conda environment from file for a given Python version.')$/;"	kind:variable	line:49
+phagraphnn	../docs/conf.py	/^import phagraphnn$/;"	kind:namespace	line:25
+phagraphnn	../tests/test_phagraphnn.py	/^    import phagraphnn.utilities as ut$/;"	kind:namespace	line:23
+phagraphnn	../tests/test_phagraphnn.py	/^    import phagraphnn.utilities as ut$/;"	kind:namespace	line:30
+phagraphnn	../tests/test_phagraphnn.py	/^    import phagraphnn.utilities as ut$/;"	kind:namespace	line:38
+phagraphnn	../tests/test_phagraphnn.py	/^    import phagraphnn.utilities as ut$/;"	kind:namespace	line:48
+phagraphnn	../tests/test_phagraphnn.py	/^    import phagraphnn.utilities as ut$/;"	kind:namespace	line:56
+phagraphnn	../tests/test_phagraphnn.py	/^    import phagraphnn.utilities as ut$/;"	kind:namespace	line:71
+phagraphnn	../tests/test_phagraphnn.py	/^    import phagraphnn.utilities as ut$/;"	kind:namespace	line:85
+phagraphnn	../tests/test_phagraphnn.py	/^import phagraphnn$/;"	kind:namespace	line:13
+phagraphnn.py	../phagraphnn/phagraphnn.py	1;"	kind:file	line:1
+pickle	../tests/test_phagraphnn.py	/^import pickle$/;"	kind:namespace	line:12
+project	../docs/conf.py	/^project = u'PhaGraphNN'$/;"	kind:variable	line:50
+pygments_style	../docs/conf.py	/^pygments_style = 'sphinx'$/;"	kind:variable	line:76
+pytest	../tests/test_phagraphnn.py	/^import pytest$/;"	kind:namespace	line:10
+python_replacement_string	../devtools/scripts/create_conda_env.py	/^python_replacement_string = "python {}*".format(args.python)$/;"	kind:variable	line:63
+rdkit	../phagraphnn/utilities.py	/^import rdkit.Chem.AllChem as RDAllChem$/;"	kind:namespace	line:13
+re	../devtools/scripts/create_conda_env.py	/^import re$/;"	kind:namespace	line:3
+readChemblXls	../phagraphnn/utilities.py	/^def readChemblXls(path_to_xls,col_entries = [0,7,10],sheet_index=0,n_entries=10000):$/;"	kind:function	line:16
+readProteinFile	../phagraphnn/PhaGraph.py	/^    def readProteinFile(self,path_to_file):$/;"	kind:member	line:111
+readme	../setup.py	/^    readme = readme_file.read()$/;"	kind:variable	line:9
+reduce_func	../phagraphnn/PhaGAT.py	/^    def reduce_func(self, e,z_env,scope):$/;"	kind:member	line:51
+release	../docs/conf.py	/^release = phagraphnn.__version__$/;"	kind:variable	line:61
+requirements	../setup.py	/^requirements = [ ]$/;"	kind:variable	line:14
+ruamel_yaml_path	../devtools/scripts/create_conda_env.py	/^            ruamel_yaml_path = glob.glob(os.path.join(CONDA_BIN, '..',$/;"	kind:variable	line:21
+setName	../phagraphnn/PhaGraph.py	/^    def setName(self,name):$/;"	kind:member	line:71
+setProperty	../phagraphnn/PhaGraph.py	/^    def setProperty(self,property_name,property_):$/;"	kind:member	line:59
+setup	../setup.py	/^from setuptools import setup, find_packages$/;"	kind:namespace	line:6
+setup.py	../setup.py	1;"	kind:file	line:1
+setup_requirements	../setup.py	/^setup_requirements = ['pytest-runner', ]$/;"	kind:variable	line:16
+setup_requires	../setup.py	/^    setup_requires=setup_requirements,$/;"	kind:variable	line:50
+shutil	../devtools/scripts/create_conda_env.py	/^import shutil$/;"	kind:namespace	line:5
+source_suffix	../docs/conf.py	/^source_suffix = '.rst'$/;"	kind:variable	line:44
+sp	../devtools/scripts/create_conda_env.py	/^import subprocess as sp$/;"	kind:namespace	line:6
+spec	../devtools/scripts/create_conda_env.py	/^            spec = import_util.spec_from_file_location('ruamel_yaml', ruamel_yaml_path)$/;"	kind:variable	line:26
+sys	../docs/conf.py	/^import sys$/;"	kind:namespace	line:22
+sys	../phagraphnn/PhaGraph.py	/^import sys$/;"	kind:namespace	line:9
+sys	../phagraphnn/cli.py	/^import sys$/;"	kind:namespace	line:5
+sys	../tests/test_phagraphnn.py	/^import sys, os$/;"	kind:namespace	line:11
+temp_cd	../devtools/scripts/create_conda_env.py	/^def temp_cd():$/;"	kind:function	line:37
+temp_file_name	../devtools/scripts/create_conda_env.py	/^    temp_file_name = "temp_script.yaml"$/;"	kind:variable	line:92
+templates_path	../docs/conf.py	/^templates_path = ['_templates']$/;"	kind:variable	line:38
+tensorize	../phagraphnn/PhaGAT.py	/^    def tensorize(graph_batch):$/;"	kind:member	line:81
+tensorize	../phagraphnn/PhaMPN.py	/^    def tensorize(graph_batch):$/;"	kind:member	line:112
+test_equ	../tests/test_phagraphnn.py	/^def test_equ():$/;"	kind:function	line:15
+test_phagraphNN_edge_distance	../tests/test_phagraphnn.py	/^def test_phagraphNN_edge_distance():$/;"	kind:function	line:84
+test_phagraphNN_edges	../tests/test_phagraphnn.py	/^def test_phagraphNN_edges():$/;"	kind:function	line:70
+test_phagraphNN_generateFromSDF	../tests/test_phagraphnn.py	/^def test_phagraphNN_generateFromSDF():$/;"	kind:function	line:47
+test_phagraphNN_generateFromSmiles_file	../tests/test_phagraphnn.py	/^def test_phagraphNN_generateFromSmiles_file():$/;"	kind:function	line:29
+test_phagraphNN_generateFromSmiles_smile	../tests/test_phagraphnn.py	/^def test_phagraphNN_generateFromSmiles_smile():$/;"	kind:function	line:37
+test_phagraphNN_imported	../tests/test_phagraphnn.py	/^def test_phagraphNN_imported():$/;"	kind:function	line:18
+test_phagraphNN_nodes	../tests/test_phagraphnn.py	/^def test_phagraphNN_nodes():$/;"	kind:function	line:55
+test_phagraphnn.py	../tests/test_phagraphnn.py	1;"	kind:file	line:1
+test_suite	../setup.py	/^    test_suite='tests',$/;"	kind:variable	line:51
+test_utilities_readChemblXls_method	../tests/test_phagraphnn.py	/^def test_utilities_readChemblXls_method():$/;"	kind:function	line:22
+tests_require	../setup.py	/^    tests_require=test_requirements,$/;"	kind:variable	line:52
+texinfo_documents	../docs/conf.py	/^texinfo_documents = [$/;"	kind:variable	line:153
+tf	../phagraphnn/PhaGAT.py	/^import tensorflow as tf$/;"	kind:namespace	line:1
+tf	../phagraphnn/PhaMPN.py	/^import tensorflow as tf$/;"	kind:namespace	line:1
+todo_include_todos	../docs/conf.py	/^todo_include_todos = False$/;"	kind:variable	line:79
+unittest	../tests/test_phagraphnn.py	/^import unittest$/;"	kind:namespace	line:7
+update	../phagraphnn/PhaGAT.py	/^    def update(self,e,z_env,scope):$/;"	kind:member	line:71
+url	../setup.py	/^    url='https:\/\/github.com\/spudlig\/phagraphnn',$/;"	kind:variable	line:53
+ut	../tests/test_phagraphnn.py	/^    import phagraphnn.utilities as ut$/;"	kind:namespace	line:23
+ut	../tests/test_phagraphnn.py	/^    import phagraphnn.utilities as ut$/;"	kind:namespace	line:30
+ut	../tests/test_phagraphnn.py	/^    import phagraphnn.utilities as ut$/;"	kind:namespace	line:38
+ut	../tests/test_phagraphnn.py	/^    import phagraphnn.utilities as ut$/;"	kind:namespace	line:48
+ut	../tests/test_phagraphnn.py	/^    import phagraphnn.utilities as ut$/;"	kind:namespace	line:56
+ut	../tests/test_phagraphnn.py	/^    import phagraphnn.utilities as ut$/;"	kind:namespace	line:71
+ut	../tests/test_phagraphnn.py	/^    import phagraphnn.utilities as ut$/;"	kind:namespace	line:85
+utilities.py	../phagraphnn/utilities.py	1;"	kind:file	line:1
+version	../docs/conf.py	/^version = phagraphnn.__version__$/;"	kind:variable	line:59
+version	../setup.py	/^    version='0.1.0',$/;"	kind:variable	line:54
+xlrd	../phagraphnn/utilities.py	/^import xlrd$/;"	kind:namespace	line:2
+yaml	../devtools/scripts/create_conda_env.py	/^            yaml = spec.loader.load_module()$/;"	kind:variable	line:27
+yaml	../devtools/scripts/create_conda_env.py	/^        import ruamel_yaml as yaml  # Ruamel YAML$/;"	kind:namespace	line:15
+yaml	../devtools/scripts/create_conda_env.py	/^    import yaml  # PyYAML$/;"	kind:namespace	line:11
+yaml_script	../devtools/scripts/create_conda_env.py	/^    yaml_script = loader(handle.read())$/;"	kind:variable	line:61
+zip_safe	../setup.py	/^    zip_safe=False,$/;"	kind:variable	line:55
