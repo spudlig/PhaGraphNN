@@ -18,11 +18,10 @@ class PhaNode():
     This class represents a feature of the pharmacophore graph - if there are
     more than one feature at the same position, other_feature_types is used.
     '''
-    def __init__(self,feature_type):
-        self.feature_type = feature_type
+    def __init__(self):
+        self.feature_type = []
         self.coords = np.array([0.0, 0.0, 0.0])
-        self.index = 0
-        self.other_feature_types = [0,0,0,0,0,0,0,0] # as soon as there are two or more features at one position, it is added here
+        self.index = 0 # if there are overlapping features, the index of either one of them is -1
 
 class PhaGraph():
     ''' This class is the pharmacophore graph class.
@@ -35,17 +34,18 @@ class PhaGraph():
 
     '''
     def __init__(self):
-        self.nodes = list() # PhaNode pbjects
+        self.nodes = list() # PhaNode objects
         self.edges = set() # Set of all pairwise connected features
         self.edge_weights = dict() # the distance between the center of feature1 to feature2
         
         self.properties = dict()
         self.name = None
 
+        self.merge_distance_threashold = 0.4 # every pairwise feature set below that threshold is being reduced to one "new" feature type
+
     def __call__(self,pharmacophore):
         self._generateNodes(pharmacophore)
-        self._calcDistMatrix()
-        self._generateEdges()
+        self._calcEdgeDistance()
 
     def getProperty(self,property_name):
         '''
@@ -70,6 +70,23 @@ class PhaGraph():
         '''
         self.properties[property_name] = property_
 
+    def getMergeDistanceThreshold(self):
+        '''
+        Returns \n
+        (float): the pairwise feature set distance, 
+        below which two features are being merged to one "new" feature
+        '''
+        return self.merge_distance_threashold
+
+
+    def setMergeDistanceThreshold(self,merge_distance_threashold):
+        '''
+        Input \n
+        merge_distance_threshold (float): the pairwise feature set distance, 
+        below which two features are being merged to one "new" feature
+        '''
+        self.merge_distance_threashold = merge_distance_threashold
+
     def getName(self):
         return self.name
 
@@ -84,7 +101,13 @@ class PhaGraph():
         Returns \n
         (float): the distance between origin node1 and target node2
         '''
-        return float(self.distMatrix[node1.index, node2.index])
+        if (node1.index, node2.index) in self.edges:
+            return float(self.distMatrix[node1.index, node2.index])
+
+        if (node2.index, node1.index) in self.edges:
+            return float(self.distMatrix[node2.index, node1.index])
+
+        return False
 
     def distance_idx(self, idx1, idx2):
         '''
@@ -95,7 +118,13 @@ class PhaGraph():
         Returns \n
         (float): the distance between origin node1 and target node2
         '''
-        return float(self.distMatrix[idx1, idx2])
+        if (idx1, idx2) in self.edges:
+            return float(self.distMatrix[idx1, idx2])
+
+        if (idx2, idx1) in self.edges:
+            return float(self.distMatrix[idx2, idx1])
+
+        return False
 
     def connected(self, node1, node2):
         '''
@@ -122,8 +151,8 @@ class PhaGraph():
         '''
         index_counter = 0
         for feature in pha:
-            node = PhaNode(Pharm.getType(feature))
-            node.other_feature_types = self._getAllowedSet(Pharm.getType(feature), ELEM_LIST)
+            node = PhaNode()
+            node.feature_type = self._getAllowedSet(Pharm.getType(feature), ELEM_LIST)
             node.coords[0]= round(Chem.get3DCoordinates(feature)[0],6)
             node.coords[1]= round(Chem.get3DCoordinates(feature)[1],6)
             node.coords[2]= round(Chem.get3DCoordinates(feature)[2],6)
@@ -131,47 +160,28 @@ class PhaGraph():
             index_counter += 1
             self.nodes.append(node)
 
-    def _calcDistMatrix(self):
+    def _calcEdgeDistance(self):
         ''' 
         PRIVATE METHOD
         generates the edges for the graph \n
         '''
         self.distMatrix = np.ndarray(shape=(len(self.nodes), len(self.nodes)), dtype=float)
         for i in range(0, len(self.nodes)):
-            for j in range(i, len(self.nodes)):
+            for j in range(i+1, len(self.nodes)):
                 if i == j:
                     self.distMatrix[i, j] = 0.0
-                else:
-                    if self.nodes[j].index == -1 or self.nodes[i].index == -1: continue
-                    # when dist is 0 and its not itself (i==J), create a new feature type, safe the old
-                    # one in the other_feature_type list. 
-                    dist = (round(np.linalg.norm(self.nodes[i].coords - self.nodes[j].coords),3))
-                    if dist < round(0.2,3):
-                        self.nodes[i].other_feature_types = [x+y for x,y in zip(self.nodes[i].other_feature_types,self._getAllowedSet(self.nodes[j].feature_type, ELEM_LIST))]
-                        self.nodes[j].index = -1
-                        continue
-
-                    self.distMatrix[i, j] = dist
-                    self.distMatrix[j, i] = dist
-
-    def _generateEdges(self):
-        ''' 
-        PRIVATE METHOD
-        generates the edges for the graph \n
-        '''
-        for i in range(0, len(self.nodes)):
-            phan1 = self.nodes[i]
-
-            for j in range(i+1, len(self.nodes)):
-                phan2 = self.nodes[j]
-                if phan1.index == phan2.index:continue
-
-                dist = self.distance(phan1,phan2)
-
+                if self.nodes[j].index == -1 or self.nodes[i].index == -1: continue
+                dist = (round(np.linalg.norm(self.nodes[i].coords - self.nodes[j].coords),3))
+                if dist < round(self.merge_distance_threashold,3):
+                    # when dist is below self.merge_distance_threashold,
+                    # create a new feature type
+                    self.nodes[i].feature_type = [x+y for x,y in zip(self.nodes[i].feature_type,self.nodes[j].feature_type)]
+                    self.nodes[j].index = -1
+                    continue
+                self.distMatrix[i, j] = dist
+                self.edge_weights[(i,j)] = dist
                 self.edges.add((i, j))
-                self.edge_weights[(i,j)] = (dist)
-
-
+                
     def _getAllowedSet(self,x, allowable_set):
         ''' 
         PRIVATE METHOD 

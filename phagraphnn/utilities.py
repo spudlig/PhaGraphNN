@@ -12,6 +12,8 @@ import CDPL.Math as Math
 
 import rdkit.Chem.AllChem as RDAllChem
 from rdkit import Chem as RDChem
+#import urllib2
+from urllib.request import urlretrieve
 
 def readChemblXls(path_to_xls,col_entries = [0,7,10],sheet_index=0,n_entries=10000):
     '''
@@ -136,7 +138,7 @@ def CDPLphaGenerator(protein,ligand,pha_type):
     generates the pharmacophore for either the ligand, the environment or
     the interaction between them.
     Input: \n
-    protein (CDPL Fragment): the CDPL protein fragment  \n
+    protein (CDPL Fragment): the CDPL protein fragment (=env)  \n
     ligand (CDPL BasicMolecule): a molecule or a ligand in the corresponding
      protein pocket  \n
     pha_type (string): either "lig_only", "env_only" or None - then its the
@@ -146,13 +148,18 @@ def CDPLphaGenerator(protein,ligand,pha_type):
      '''
     lig_pharm = None
     if pha_type is 'lig_only':
-        lig_pharm = self._CDPLgeneratePha(ligand,pha_type)
+        Chem.perceiveSSSR(ligand, True)
+        lig_pharm = _CDPLgeneratePha(ligand,pha_type)
         return lig_pharm
     Chem.perceiveSSSR(protein, True)
     env_pharm = None
     if pha_type is 'env_only':
-        env_pharm = self._CDPLgeneratePha(protein)
+        env_pharm = _CDPLgeneratePha(protein,pha_type)
         return env_pharm
+
+    Chem.perceiveSSSR(ligand, True)
+    lig_pharm = _CDPLgeneratePha(ligand,pha_type)
+    env_pharm = _CDPLgeneratePha(protein,pha_type)
     
     mapping = Pharm.FeatureMapping()
 
@@ -161,7 +168,7 @@ def CDPLphaGenerator(protein,ligand,pha_type):
     Pharm.buildInteractionPharmacophore(int_pharm, mapping)
     return int_pharm
 
-def CDPLdownloadProteinFile(pdb_four_letter_code):
+def CDPLdownloadProteinFile(pdb_four_letter_code,lig_three_letter_code,radius,remove_water=True):
     '''
     downloads the PDB with the corresponding four letter code.
     Input:\n
@@ -170,8 +177,23 @@ def CDPLdownloadProteinFile(pdb_four_letter_code):
     Return: \n
     (CDPL BasicMolecule): the protein structure \n
     '''
-    #TODO
-    return pdb_mol
+    directory = os.getcwd()
+
+    path = directory +"/temp_pdb/"
+
+    if not os.path.exists(path):
+        os.makedirs(path)
+    urlretrieve('http://files.rcsb.org/download/'+pdb_four_letter_code+'.pdb',(path+pdb_four_letter_code+".pdb"))
+    pdb_mol = _CDPLreadFromPDBFile(path+pdb_four_letter_code+".pdb")
+
+    if remove_water:
+        _removeWater(pdb_mol)
+
+    environment, ligand = _CDPLextractProteinFragments(pdb_mol,lig_three_letter_code=lig_three_letter_code,radius=radius)
+    
+    os.remove(path+pdb_four_letter_code+".pdb")
+
+    return pdb_mol, environment, ligand
 
 def CDPLreadProteinFile(path_to_pdb,lig_three_letter_code,radius,remove_water=True):
     '''
@@ -187,14 +209,39 @@ def CDPLreadProteinFile(path_to_pdb,lig_three_letter_code,radius,remove_water=Tr
     (CDPL Fragment): the defined ligand \n
     '''
     pdb_mol = _CDPLreadFromPDBFile(path_to_pdb)
-    environment, ligand = _CDPLextractProteinFragments(pdb_mol,lig_three_letter_code,remove_water,radius=radius)
+    if remove_water:
+        _removeWater(pdb_mol)
+    
+    environment, ligand = _CDPLextractProteinFragments(pdb_mol,lig_three_letter_code,radius=radius)
 
     return pdb_mol, environment, ligand
 
+def savePharmacophore(pha,path):
+    '''
+    Saves a particula pha at the target path.\n
+    Input:\n
+    pha (CDPL BasicPharmacophore): the pharmacophore to be saved as a pml file \n
+    path (String): path where to save the pml file (includes the filename.pml)
+    '''
 
-def _CDPLextractProteinFragments(pdb_mol, lig_three_letter_code,remove_water, radius=6.0):
+    Pharm.PMLFeatureContainerWriter(Base.FileIOStream(path
+                                                      ,'w')).write(pha)
+
+    return True
+    
+
+def _removeWater(mol):
+    to_remove = list()
+    for atom in mol.atoms:
+        if Biomol.getResidueCode(atom) == 'HOH':
+            to_remove.append(atom)
+
+    for atom in to_remove:
+        mol.removeAtom(mol.getAtomIndex(atom))
+
+
+def _CDPLextractProteinFragments(pdb_mol, lig_three_letter_code, radius=6.0):
     lig = Chem.Fragment()
-
     _CDPLcalcProteinProperties(pdb_mol)
 
     # extract ligand
@@ -207,19 +254,10 @@ def _CDPLextractProteinFragments(pdb_mol, lig_three_letter_code,remove_water, ra
     env = Chem.Fragment()
     Biomol.extractEnvironmentResidues(lig, pdb_mol, env, float(radius))
     
-    # remove water
-    if remove_water:
-        to_remove = list()
-        for atom in env.atoms:
-            if Biomol.getResidueCode(atom) == 'HOH':
-                to_remove.append(atom)
-        for atom in to_remove:
-            env.removeAtom(env.getAtomIndex(atom))
-
     return env,lig
 
 
-def _CDPLgeneratePha(mol,lig_only):
+def _CDPLgeneratePha(mol,pha_type):
     '''
     PRIVAT METHOD
     generates the pharmacophore for the molecule and is used by the CDPLphaGenerator.
@@ -302,7 +340,7 @@ def _CDPLgenerateConformation(cdpl_mol):
 
     Chem.set3DCoordinates(cdpl_mol, coords)
 
-    return cdplMol
+    return cdpl_mol
 
 
 def _CDPLconfigForConformation(mol): # TODO is this the right way to handle ligands for conf. generation?

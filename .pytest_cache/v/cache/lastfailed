@@ -1,9 +1,0 @@
-{
-  "tests/test_phagraphnn.py::test_phagraphNN_edge_distance": true,
-  "tests/test_phagraphnn.py::test_phagraphNN_edges": true,
-  "tests/test_phagraphnn.py::test_phagraphNN_generateFromSDF": true,
-  "tests/test_phagraphnn.py::test_phagraphNN_generateFromSmiles_file": true,
-  "tests/test_phagraphnn.py::test_phagraphNN_generateFromSmiles_smile": true,
-  "tests/test_phagraphnn.py::test_phagraphNN_nodes": true,
-  "tests/test_phagraphnn.py::test_utilities_readChemblXls_method": true
-}
