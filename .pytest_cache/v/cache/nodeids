@@ -9,5 +9,6 @@
   "tests/test_phagraphnn.py::test_phagraphNN_generateFromPDB_URL",
   "tests/test_phagraphnn.py::test_phagraphNN_generatePha",
   "tests/test_phagraphnn.py::test_phagraphNN_generate_protein_phas",
-  "tests/test_phagraphnn.py::test_phagraphNN"
+  "tests/test_phagraphnn.py::test_phagraphNN",
+  "tests/test_phagraphnn.py::test_gatNN"
 ]

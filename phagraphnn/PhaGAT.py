@@ -1,25 +1,15 @@
 import tensorflow as tf
 import numpy as np
 import copy
+from utilities import *
 
-ELEM_LIST =[1,2,3,4,5,6,'unk']
+ELEM_LIST =[0,1,2,3,4,5,6,7] #0=unk,1=H,2=AR,3=NI,4=PI, 5=HBD,6=HBA,7=XV
 FEATURE_FDIM = len(ELEM_LIST)
 EDGE_FDIM = 1
 ALL_FDIM = FEATURE_FDIM+EDGE_FDIM
 MAX_NB = 15
 MAX_NR_SURROUND_FEATURES = 30
 MAX_NR_FEATURES = 35
-
-def onek_encoding_unk(x, allowable_set):
-    if x not in allowable_set:
-        x = allowable_set[-1]
-    return list(map(lambda s: float(x == s), allowable_set))
-
-def get_features(feature):
-    return tf.convert_to_tensor((onek_encoding_unk(feature.feature_type, ELEM_LIST)))
-
-def edge_features(bond):
-    return tf.convert_to_tensor(fbond + fstereo)
 
 def create_var(tensor, requires_grad=None):
     if requires_grad is None:
@@ -36,7 +26,7 @@ def index_select_ND(source, dim, index):
     return tf.reshape(target,shape=final_size)
 
 class GATLayer(tf.keras.Model):
-    def __init__(self, in_dim, out_dim,dropout_rate):
+    def __init__(self, in_dim, out_dim, dropout_rate):
         super(GATLayer, self).__init__(name='GATLayer')
         self.fc = tf.keras.layers.Dense(out_dim, input_shape=(in_dim,), use_bias=False,kernel_initializer=tf.keras.initializers.he_normal())
         self.fc_env = tf.keras.layers.Dense(out_dim, input_shape=(in_dim,), use_bias=False,kernel_initializer=tf.keras.initializers.he_normal())
@@ -78,11 +68,14 @@ class GATLayer(tf.keras.Model):
         return self.update(e,z_others,scope)
 
     @staticmethod
-    def tensorize(graph_batch):
+    def tensorize(graph_batch,property_name):
+        '''
+
+        '''
         b_scope = []
         start_end_env = []
         l_scope = []
-        affinities = []
+        properties = []
         # fatm_dist_padding =np.zeros(ATOM_FDIM_ENV)
         feature_dist_graph = []
         rij_dist_pairs = []
@@ -95,8 +88,8 @@ class GATLayer(tf.keras.Model):
         feature_n = 1
         for graph in graph_batch:
             # affinities.append(graph.affinity)
-            affinities.append(graph.activ)
-            names.append(graph.pdb_name)
+            properties.append(graph.getProperty(property_name))
+            names.append(graph.getName())
             pha = graph.nodes
             n_features = 0
             for feature in pha:
@@ -105,10 +98,8 @@ class GATLayer(tf.keras.Model):
                 n_features +=1 
                 for other_feature in pha:
                     if other_feature.index == -1: continue
-                    if feature.index == -1: continue
                     if feature.index == other_feature.index: continue
                     distance = graph.distance(feature,other_feature)
-                    # if distance == 0.: print(feature.index,other_feature.index,distance)
                     if distance > 9.:continue
                     rij_dist_pairs.append(tf.convert_to_tensor(tf.cast(distance,tf.float32)))
                     inter = copy.copy(other_feature.other_feature_types)
@@ -140,6 +131,6 @@ class GATLayer(tf.keras.Model):
                 l_scope.append(range_lig) 
         feature_dist_graph = tf.stack(feature_dist_graph,0)
         target_features = tf.stack(target_features,0)
-        affinities = tf.stack(affinities, 0)
-        return target_features,feature_dist_graph,rij_dist_pairs,b_scope,affinities,l_scope,names,start_end_env
+        properties = tf.stack(properties, 0)
+        return target_features,feature_dist_graph,rij_dist_pairs,b_scope,properties,l_scope,names,start_end_env
 

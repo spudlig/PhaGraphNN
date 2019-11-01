@@ -113,3 +113,15 @@ def test_phagraphNN():
     assert(math.isclose(graph.distance_idx(graph.nodes[1].index,graph.nodes[0].index),3.922))
     assert(math.isclose(graph.distance_idx(graph.nodes[1].index,graph.nodes[9].index),7.443))
     assert(graph.distance_idx(graph.nodes[0].index,graph.nodes[3].index) == False)
+
+def test_gatNN():
+    import phagraphnn.utilities as ut
+    from phagraphnn.PhaGraph import PhaGraph,PhaNode
+    path = "./tests/data/threeD_activity.sdf"
+    mol = ut.CDPLmolFromSdf(path,False)
+    pha = ut.CDPLphaGenerator(None,mol,"lig_only")
+    graph = PhaGraph()
+    graph(pha)
+
+    from phagraphnn.PhaGatModel import PhaGatModel
+    model = PhaGatModel()

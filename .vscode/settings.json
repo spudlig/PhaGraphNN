@@ -1,5 +1,6 @@
 {
     "python.testing.unittestEnabled": false,
     "python.testing.nosetestsEnabled": false,
-    "python.testing.pytestEnabled": true
+    "python.testing.pytestEnabled": true,
+    "python.pythonPath": "/data/shared/software/conda/miniconda3/envs/tf2py3.7/bin/python"
 }
