@@ -1,12 +1,13 @@
 import tensorflow as tf
 import numpy as np
+import phagraphnn.PhaGatModel
 from phagraphnn.PhaGAT import GATLayer as GATLayer
 from phagraphnn.PhaGAT import FEATURE_FDIM,ALL_FDIM
 from phagraphnn.utilities import indexSelect,getConnectedFeatures, updateConnectedDict
 import logging
 log = logging.getLogger(__name__)
 
-class PhaGatModel2(tf.keras.Model):
+class PhaGatModel2(phagraphnn.PhaGatModel):
     '''
     This class uses a GAT as an update function. And does embedding over
     the origin feature vector plus the distance.
@@ -15,34 +16,20 @@ class PhaGatModel2(tf.keras.Model):
     added (merge='add') or just left as is (merge='none').
     '''
 
-    def __init__(self, hidden_dim = 8, out_dim = 10, emb_dim = 10, dropout_rate = 0.001 , num_heads = 4,
+    def __init__(self, hidden_dim = 8, out_dim = 10, dropout_rate = 0.001 , num_heads = 4,
                 merge='cat',emb_initializer = tf.random_uniform_initializer(0.1,0.9),output_nn=None):
-        super(PhaGatModel2, self).__init__(name='PhaGatModel2')
-
-        self.hidden_dim = hidden_dim
-        self.out_dim = out_dim
-        self.emb_dim = emb_dim
-        self.dropout_rate = dropout_rate
+        super().__init__(hidden_dim = hidden_dim, out_dim = out_dim, dropout_rate = dropout_rate ,
+                emb_initializer = emb_initializer,output_nn=output_nn)
         self.num_heads = num_heads
         self.merge = merge
 
-        self.heads = []
-        self.output_nn = output_nn
-
         if self.merge == 'cat':
             for head in range(1,self.num_heads):
-                self.heads.append(GATLayer(self.emb_dim*head,self.out_dim,self.dropout_rate))
+                self.heads.append(GATLayer(self.hidden_dim*head,self.out_dim,self.dropout_rate))
         else:
             for head in range(1,self.num_heads):
-                self.heads.append(GATLayer(self.emb_dim*head,self.out_dim,self.dropout_rate))
+                self.heads.append(GATLayer(self.hidden_dim*head,self.out_dim,self.dropout_rate))
 
-        self.embedding = tf.keras.layers.Dense(self.emb_dim, input_shape=(FEATURE_FDIM,),
-            name="embedding",activation=None,
-            kernel_initializer=emb_initializer)
-        self.dist_embedding = tf.keras.layers.Dense(self.emb_dim, input_shape=(ALL_FDIM,),
-            name="dist_embedding",activation=None,
-            kernel_initializer=emb_initializer)
-        
     def call(self, x_batch):
 
         ### GAT with embedding:
@@ -70,48 +57,6 @@ class PhaGatModel2(tf.keras.Model):
             log.error('There seems to be an issue with the input dimensions.'+
                 'Please check the input dimension of the output_nn you defined outside.'+
                 'Currently the NN output dimension is:'+str(self.num_heads*self.emb_dim),e)
-
-
-    def train(self, inputs, outputs, learning_rate):
-        '''
-        Trains the compiled model. Uses the defined optimizer and loss. 
-        The learning rate is NOT taken from the optimizer, 
-        needs to be applied here. \n
-        INPUT: \n
-        inputs (list of list): the batch, that is being returned by the 
-                                tensorize method of the corresponding model. \n
-        outputs (list): the batch of the "true" values. \n
-        learning_rate (float): learning rate - needs to be defined \n
-        RETURN: \n
-        (list): batch sized list of predictions
-        (list): batch size averaged loss
-        '''
-        loss = self.__getattribute__("loss")
-        optimizer = self.__getattribute__("optimizer")
-        optimizer._learning_rate = learning_rate
-        with tf.GradientTape() as tape:
-            predictions = self.call(inputs)
-            current_loss = tf.reduce_mean(loss(outputs,predictions))
-            grads = tape.gradient(current_loss, self.trainable_variables)
-            grads, _ = tf.clip_by_global_norm(grads, 0.1)
-            optimizer.apply_gradients(zip(grads, self.trainable_variables))
-            return predictions,current_loss
-
-    def evaluate(self, inputs, outputs):
-        '''
-        evaluates the trained model. Uses the defined loss.\n
-        INPUT: \n
-        inputs (list of list): the batch, that is being returned by the 
-                                tensorize method of the corresponding model. \n
-        outputs (list): the batch of the "true" values. \n
-        RETURN: \n
-        (list): batch sized list of predictions
-        (list): batch size averaged loss
-        '''
-        loss = self.__getattribute__("loss")
-        predictions = self.call(*inputs)
-        current_loss = tf.reduce_mean(loss(outputs,predictions))
-        return predictions,current_loss
 
     def _update_target_features(self,features_new,features_old):
         '''

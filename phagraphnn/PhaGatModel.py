@@ -13,25 +13,28 @@ class PhaGatModel(tf.keras.Model):
     '''
     
 
-    def __init__(self, hidden_dim = 8, out_dim = 10, emb_dim = 10, dropout_rate = 0.001 , num_iters = 2,
+    def __init__(self, hidden_dim = 8, out_dim = 10, dropout_rate = 0.001 , num_iters = 2,
                 emb_initializer = tf.random_uniform_initializer(0.1,0.9),output_nn=None):
         super(PhaGatModel, self).__init__(name='PhaGatModel')
 
         self.hidden_dim = hidden_dim
         self.out_dim = out_dim
-        self.emb_dim = emb_dim
         self.dropout_rate = dropout_rate
         self.num_iters = num_iters
 
         self.heads = []
         self.output_nn = output_nn
 
-        self.GATLayer = GATLayer(self.emb_dim,self.out_dim,self.dropout_rate)
+        print("self.hidden_dim",self.hidden_dim)
+        print("self.out_dim",self.out_dim)
+        print("self.dropout_rate",self.dropout_rate)
 
-        self.embedding = tf.keras.layers.Dense(self.emb_dim, input_shape=(FEATURE_FDIM,),
+        self.GATLayer = GATLayer(self.hidden_dim,self.out_dim,self.dropout_rate)
+
+        self.embedding = tf.keras.layers.Dense(self.hidden_dim, input_shape=(FEATURE_FDIM,),
             name="embedding",activation=None,
             kernel_initializer=emb_initializer)
-        self.dist_embedding = tf.keras.layers.Dense(self.emb_dim, input_shape=(ALL_FDIM,),
+        self.dist_embedding = tf.keras.layers.Dense(self.hidden_dim, input_shape=(ALL_FDIM,),
             name="dist_embedding",activation=None,
             kernel_initializer=emb_initializer)
         

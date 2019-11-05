@@ -143,8 +143,8 @@ def test_gatNN():
     tf.keras.layers.Dense(8, activation='relu',name="second_layer"),
     tf.keras.layers.Dense(1,activation= None)],name="output_NN")
 
-    gat2 = gat2(hidden_dim=32,emb_dim=32,output_nn=seq2,merge='cat')
-    gat = gat(hidden_dim=32,emb_dim=32,output_nn=seq)
+    gat2 = gat2(hidden_dim=32,output_nn=seq2,merge='cat')
+    gat = gat(hidden_dim=32,output_nn=seq)
     lr = 0.001
     gat.compile(loss=tf.keras.losses.mse,
                 optimizer=tf.keras.optimizers.RMSprop(lr))
@@ -161,7 +161,6 @@ def test_gatNN():
             print("pred,loss",pred,loss)
             print("pred2,loss2",pred2,loss2)
             print("af",af)
-    assert(1==-1)
     # from phagraphnn.PhaGatModel import PhaGatModel
     # model = PhaGatModel()
 
@@ -180,7 +179,9 @@ def test_PhaGru():
     from phagraphnn.DataPreperer import DataPreparer
     loader = DataPreparer(graph_list,3,property_string="ic50",mpn="gru",is_path=False)
 
-    from phagraphnn.PhaGruMPN import PhaGruMPN as mpn
+    from phagraphnn.PhaGruMPN import PhaGruMPN as gru
+    from phagraphnn.PhaGruMPN2 import PhaGruMPN2 as gru2
+    from phagraphnn.PhaGruMPN3 import PhaGruMPN3 as gru3
     import tensorflow as tf
 
     seq = tf.keras.Sequential([
@@ -188,16 +189,75 @@ def test_PhaGru():
     tf.keras.layers.Dense(8, activation='relu',name="second_layer"),
     tf.keras.layers.Dense(1,activation= None)],name="output_NN")
 
-    mpn = mpn(32,3,seq)
+    seq2 = tf.keras.Sequential([
+    tf.keras.layers.Dense(16, activation='relu', input_shape=(32,),name="first_layer"),
+    tf.keras.layers.Dense(8, activation='relu',name="second_layer"),
+    tf.keras.layers.Dense(1,activation= None)],name="output_NN")
+
+    seq3 = tf.keras.Sequential([
+    tf.keras.layers.Dense(16, activation='relu', input_shape=(32,),name="first_layer"),
+    tf.keras.layers.Dense(8, activation='relu',name="second_layer"),
+    tf.keras.layers.Dense(1,activation= None)],name="output_NN")
+
+    gru = gru(32,3,seq)
+    gru2 = gru2(32,3,seq2)
+    gru3 = gru3(32,3,seq3)
+
     lr = 0.001
-    mpn.compile(loss=tf.keras.losses.mse,
+    gru.compile(loss=tf.keras.losses.mse,
+                optimizer=tf.keras.optimizers.RMSprop(lr))
+
+    gru2.compile(loss=tf.keras.losses.mse,
+                optimizer=tf.keras.optimizers.RMSprop(lr))
+
+    gru3.compile(loss=tf.keras.losses.mse,
                 optimizer=tf.keras.optimizers.RMSprop(lr))
     rec = tf.keras.metrics.MeanAbsoluteError()
     for batch in loader:
         inputs,af,other = batch
-        mpn(inputs)
+        gru(inputs)
+        gru2(inputs)
+        gru3(inputs)
         for epoch in range(0,10):
-            pred,loss = mpn.train(inputs=inputs,outputs=af,learning_rate=lr)
+            pred,loss = gru.train(inputs=inputs,outputs=af,learning_rate=lr)
+            pred,loss = gru2.train(inputs=inputs,outputs=af,learning_rate=lr)
+            pred,loss = gru3.train(inputs=inputs,outputs=af,learning_rate=lr)
+            print("pred,loss",pred,loss)
+            print("af",af)
+
+def test_PhaGat2():
+    import phagraphnn.utilities as ut
+    from phagraphnn.PhaGraph import PhaGraph,PhaNode
+
+    data = ut.readChemblXls("./tests/data/CHE_3.xls")
+    graph_list = []
+    for i in range(0,len(data)):
+        graph = PhaGraph()
+        mol = ut.CDPLmolFromSmiles(data[i][1],True)
+        graph(ut.CDPLphaGenerator(None,mol,"lig_only"))
+        graph.setProperty("ic50",data[i][2])
+        graph_list.append(graph)
+    from phagraphnn.DataPreperer import DataPreparer
+    loader = DataPreparer(graph_list,3,property_string="ic50",mpn="gru",is_path=False)
+
+    from phagraphnn.PhaGatModel2 import PhaGatModel2 as gat
+    import tensorflow as tf
+
+    seq = tf.keras.Sequential([
+    tf.keras.layers.Dense(16, activation='relu', input_shape=(128,),name="first_layer"),
+    tf.keras.layers.Dense(8, activation='relu',name="second_layer"),
+    tf.keras.layers.Dense(1,activation= None)],name="output_NN")
+
+    gat = gat(hidden_dim=32,output_nn=seq)
+    lr = 0.001
+    gat.compile(loss=tf.keras.losses.mse,
+                optimizer=tf.keras.optimizers.RMSprop(lr))
+    rec = tf.keras.metrics.MeanAbsoluteError()
+    for batch in loader:
+        inputs,af,other = batch
+        gat(inputs)
+        for epoch in range(0,10):
+            pred,loss = gat.train(inputs=inputs,outputs=af,learning_rate=lr)
             print("pred,loss",pred,loss)
             print("af",af)
     assert(1==-1)
