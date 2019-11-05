@@ -1,3 +1,6 @@
+import logging
+log = logging.getLogger(__name__)
+
 import numpy as np
 import xlrd
 import os
@@ -10,10 +13,12 @@ import CDPL.Base as Base
 import CDPL.ConfGen as ConfGen
 import CDPL.Math as Math
 
+import tensorflow as tf
+
 import rdkit.Chem.AllChem as RDAllChem
 from rdkit import Chem as RDChem
-#import urllib2
 from urllib.request import urlretrieve
+
 
 def readChemblXls(path_to_xls,col_entries = [0,7,10],sheet_index=0,n_entries=10000):
     '''
@@ -42,7 +47,7 @@ def readChemblXls(path_to_xls,col_entries = [0,7,10],sheet_index=0,n_entries=100
             row_nr += 1
             data.append(single_entry)
     except Exception as e:
-        print("End of xls file with",row_nr,"entries.")
+        log.info("End of xls file with",row_nr,"entries.",exc_info=True)
         pass
     
     return data
@@ -58,14 +63,22 @@ def molFromSmiles(smiles,conformation):
     Return: \n
     (RDKitMolecule): the corresponding RDKit molecule 
     '''
-    m = RDChem.MolFromSmiles(smiles)
+    m = None
+    try:
+        m = RDChem.MolFromSmiles(smiles)
+    except Exception as e:
+        log.error("Could not parse RDKitSmiles smiles",exc_info=True)
+        
     if conformation:
-        m_conf = RDChem.AddHs(m)
-        RDAllChem.EmbedMolecule(m_conf)
-        RDAllChem.MMFFOptimizeMolecule(m_conf)
-        return m_conf
-
+        try:
+            m_conf = RDChem.AddHs(m)
+            RDAllChem.EmbedMolecule(m_conf)
+            RDAllChem.MMFFOptimizeMolecule(m_conf)
+            return m_conf
+        except Exception as e:
+            log.error("Could not parse generate a valid conformation",exc_info=True)
     return m
+
 
 def molFromSdf(sdf_path,conformation):
     ''' 
@@ -80,7 +93,7 @@ def molFromSdf(sdf_path,conformation):
     suppl = RDChem.SDMolSupplier(sdf_path)
 
     if(len(suppl)>1):
-        print(sys.stderr, '! More than 1 sdf in file - please use only one sdf per path !')
+        log.error('! More than 1 sdf in file - please use only one sdf per path !')
         return
     for m in suppl:
         if conformation:
@@ -103,7 +116,7 @@ def CDPLmolFromSmiles(smiles_path,conformation):
     if ".smi" in smiles_path:
         smi_reader = Chem.FileSMILESMoleculeReader(smiles_path)
         if not smi_reader.read(mol):
-            print("COULD NOT READ SDF",file)
+            log.error("COULD NOT READ Smiles",smiles_path)
             return False
     else:
         mol = Chem.parseSMILES(smiles_path)
@@ -127,11 +140,28 @@ def CDPLmolFromSdf(sdf_path,conformation):
     sdf_reader = Chem.SDFMoleculeReader(ifs)
 
     if not sdf_reader.read(mol):
-        print("COULD NOT READ SDF",file)
+        log.error("COULD NOT READ SDF",sdf_path)
         return False
     if conformation:
         return _CDPLgenerateConformation(mol)
     return mol
+
+def CDPLphaFromPML(pml_path):
+    '''
+    reads a single CDPL BasicPharmacophore from an pml-file.
+    Input: \n
+    pml_path (string): path to the pml file \n
+    Return: \n
+    (CDPL BasicPharmacophore): the corresponding CDPL BasicPharmacophore 
+    '''
+    pha = Pharm.BasicPharmacophore()
+    ifs = Base.FileIOStream(pml_path, 'r')
+    pml_reader = Pharm.PMLPharmacophoreReader(ifs)
+
+    if not pml_reader.read(pha):
+        log.error("COULD NOT READ PML",pml_path)
+        return False
+    return pha
 
 def CDPLphaGenerator(protein,ligand,pha_type):
     '''
@@ -249,7 +279,7 @@ def _CDPLextractProteinFragments(pdb_mol, lig_three_letter_code, radius=6.0):
         if Biomol.getResidueCode(atom) == lig_three_letter_code:
             Biomol.extractResidueSubstructure(atom, pdb_mol, lig, False)
     if lig.numAtoms == 0:
-        raise ValueError("The defined three letter code is not existing:",lig_three_letter_code)
+        log.error("The defined three letter code is not existing:",lig_three_letter_code)
     # extract environment
     env = Chem.Fragment()
     Biomol.extractEnvironmentResidues(lig, pdb_mol, env, float(radius))
@@ -291,10 +321,59 @@ def _CDPLreadFromPDBFile(pdb_file):
     Biomol.setPDBApplyDictAtomBondingToNonStdResiduesParameter(pdb_reader, False) #TODO Should this be there for the pdb readin? or also in the config?
 
     if not pdb_reader.read(pdb_mol):
-        print("COULD NOT READ PDB",pdb_file)
+        log.error("COULD NOT READ PDB",pdb_file)
         return False
 
     return pdb_mol
+
+def createVar(tensor, requires_grad=None):
+    '''
+    Initializes a tensorflow variable
+    '''
+    if requires_grad is None:
+        return tf.Variable(tensor,trainable=False)
+    else:
+        return tf.Variable(tensor,trainable=True)
+
+def indexSelect(source, dim, index):
+    '''
+    Selects the corresponding indices for MPN
+    '''
+    index_size = tf.shape(index)
+    suffix_dim = tf.shape(source)[1:]
+    final_size = tf.concat((index_size, suffix_dim),axis=0)
+    inter = tf.reshape(index,shape=[-1])
+    target = tf.gather(source,indices=inter,axis=dim)
+    return tf.reshape(target,shape=final_size)
+
+def updateConnected(atom_features,scope):
+    updated = []
+    for i in scope:
+        updated.append(atom_features[i])
+    return updated
+
+def updateConnectedDict(features,feature_dict,scope):
+    updated = []
+    for i in scope:
+        updated.append(features[feature_dict[i]])
+    return updated
+
+def getConnectedFeatures(features, scope):
+    '''
+    this functions selects according to the scope, the selected connected
+    features and returns them. 0 based indices. \n
+    INPUT: \n
+    features (list): a list of features \n
+    scope (list): a list of connections \n
+    RETURNS: \n
+    (list): 
+    '''
+    gat = tf.gather(features,indices=(scope)) # get for each feature entry the connected ones
+    gat = tf.reshape(gat,(tf.shape(gat)[0]*tf.shape(gat)[1],tf.shape(gat)[2])) # remove the 3 shape introduced
+    intermediate_tensor = tf.reduce_sum(tf.abs(gat), 1) # search for all the 0 entries introduced by the gather an concat above
+    zero_vector = tf.zeros(shape=(tf.shape(gat)[0]), dtype=tf.float32) # generate dummy matrix for comparison
+    bool_mask = tf.not_equal(intermediate_tensor, zero_vector) # compare dummy with other matrix
+    return tf.boolean_mask(gat, bool_mask)
 
 def _generateConformation(mol):
     ''' 
@@ -306,9 +385,14 @@ def _generateConformation(mol):
     Return: \n
     (RDKitMolecule): the corresponding RDKit molecule 
     '''
-    m_conf = RDChem.AddHs(mol)
-    RDAllChem.EmbedMolecule(m_conf)
-    RDAllChem.MMFFOptimizeMolecule(m_conf)
+    m_conf = None
+    try:
+        m_conf = RDChem.AddHs(mol)
+        RDAllChem.EmbedMolecule(m_conf)
+        RDAllChem.MMFFOptimizeMolecule(m_conf)
+    except Exception as e:
+        log.error("Could not generate valid conformation",exc_info=True)
+        pass
 
     return m_conf
 
@@ -336,7 +420,8 @@ def _CDPLgenerateConformation(cdpl_mol):
     cg.setup(cdpl_mol)
 
     if cg.generate(coords) != ConfGen.RandomConformerGenerator.SUCCESS:
-        print(sys.stderr, '! Conformer generation failed !')
+        log.error('! Conformer generation failed !')
+        return
 
     Chem.set3DCoordinates(cdpl_mol, coords)
 

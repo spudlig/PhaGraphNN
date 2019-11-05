@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import copy
-from utilities import *
+from phagraphnn.utilities import getConnectedFeatures, updateConnected
 
 ELEM_LIST =[0,1,2,3,4,5,6,7] #0=unk,1=H,2=AR,3=NI,4=PI, 5=HBD,6=HBA,7=XV
 FEATURE_FDIM = len(ELEM_LIST)
@@ -9,21 +9,7 @@ EDGE_FDIM = 1
 ALL_FDIM = FEATURE_FDIM+EDGE_FDIM
 MAX_NB = 15
 MAX_NR_SURROUND_FEATURES = 30
-MAX_NR_FEATURES = 35
-
-def create_var(tensor, requires_grad=None):
-    if requires_grad is None:
-        return tf.Variable(tensor,trainable=False)
-    else:
-        return tf.Variable(tensor,trainable=True)
-
-def index_select_ND(source, dim, index):
-    index_size = tf.shape(index)
-    suffix_dim = tf.shape(source)[1:]
-    final_size = tf.concat((index_size, suffix_dim),axis=0)
-    inter = tf.reshape(index,shape=[-1])
-    target = tf.gather(source,indices=inter,axis=dim)
-    return tf.reshape(target,shape=final_size)
+MAX_NR_FEATURES = 50
 
 class GATLayer(tf.keras.Model):
     def __init__(self, in_dim, out_dim, dropout_rate):
@@ -68,7 +54,7 @@ class GATLayer(tf.keras.Model):
         return self.update(e,z_others,scope)
 
     @staticmethod
-    def tensorize(graph_batch,property_name):
+    def tensorize(graph_batch,property_name, cutoff=9.0):
         '''
 
         '''
@@ -76,6 +62,9 @@ class GATLayer(tf.keras.Model):
         start_end_env = []
         l_scope = []
         properties = []
+        scope_update = []
+        scope_update_lig = dict()
+
         # fatm_dist_padding =np.zeros(ATOM_FDIM_ENV)
         feature_dist_graph = []
         rij_dist_pairs = []
@@ -86,27 +75,35 @@ class GATLayer(tf.keras.Model):
         total_other_features = 1 # needs to be one, because of the gather function
         names = [] 
         feature_n = 1
+        update_n_features = 0
+        graph_nr = 0
         for graph in graph_batch:
             # affinities.append(graph.affinity)
             properties.append(graph.getProperty(property_name))
             names.append(graph.getName())
             pha = graph.nodes
             n_features = 0
+            total_update_features = 0
+            graph_nr += 1
             for feature in pha:
                 if feature.index == -1: continue
                 n_other_f = 0
-                n_features +=1 
+                scope_update_lig[str(feature.index)+"_"+str(graph_nr)] = update_n_features
+                update_n_features += 1
+                n_features +=1
                 for other_feature in pha:
                     if other_feature.index == -1: continue
                     if feature.index == other_feature.index: continue
                     distance = graph.distance(feature,other_feature)
-                    if distance > 9.:continue
+                    if distance > cutoff:continue
                     rij_dist_pairs.append(tf.convert_to_tensor(tf.cast(distance,tf.float32)))
-                    inter = copy.copy(other_feature.other_feature_types)
-                    inter.append(distance)
-                    feature_dist_graph.append(inter)
+                    # inter = copy.copy(other_feature.feature_type)
+                    # inter.append(distance)
+                    feature_dist_graph.append(other_feature.feature_type)
+                    scope_update.append(str(other_feature.index)+"_"+str(graph_nr))
                     n_other_f +=1
-                target_features.append(feature.other_feature_types)
+                    total_update_features +=1
+                target_features.append(feature.feature_type)
                 feature_n = tf.cast(feature_n,tf.int32)
                 range_dist = tf.range(total_other_features,total_other_features+ n_other_f)
                 range_dist_2 = np.repeat(feature_n,n_other_f)
@@ -131,6 +128,7 @@ class GATLayer(tf.keras.Model):
                 l_scope.append(range_lig) 
         feature_dist_graph = tf.stack(feature_dist_graph,0)
         target_features = tf.stack(target_features,0)
+        rij_dist_pairs = tf.stack(rij_dist_pairs,0)
         properties = tf.stack(properties, 0)
-        return target_features,feature_dist_graph,rij_dist_pairs,b_scope,properties,l_scope,names,start_end_env
+        return (target_features,feature_dist_graph,rij_dist_pairs,b_scope,start_end_env,l_scope,scope_update,scope_update_lig),properties,names
 

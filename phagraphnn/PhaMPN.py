@@ -16,8 +16,8 @@ def onek_encoding_unk(x, allowable_set):
 def get_features(feature):
     return tf.convert_to_tensor((onek_encoding_unk(feature.feature_type, ELEM_LIST)))
 
-def edge_features(bond):
-    return tf.convert_to_tensor(fbond + fstereo)
+# def edge_features(bond):
+#     return tf.convert_to_tensor(fbond + fstereo)
 
 def create_var(tensor, requires_grad=None):
     if requires_grad is None:

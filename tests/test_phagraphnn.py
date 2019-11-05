@@ -117,11 +117,87 @@ def test_phagraphNN():
 def test_gatNN():
     import phagraphnn.utilities as ut
     from phagraphnn.PhaGraph import PhaGraph,PhaNode
-    path = "./tests/data/threeD_activity.sdf"
-    mol = ut.CDPLmolFromSdf(path,False)
-    pha = ut.CDPLphaGenerator(None,mol,"lig_only")
-    graph = PhaGraph()
-    graph(pha)
 
-    from phagraphnn.PhaGatModel import PhaGatModel
-    model = PhaGatModel()
+    data = ut.readChemblXls("./tests/data/CHE_3.xls")
+    graph_list = []
+    for i in range(0,len(data)):
+        graph = PhaGraph()
+        mol = ut.CDPLmolFromSmiles(data[i][1],True)
+        graph(ut.CDPLphaGenerator(None,mol,"lig_only"))
+        graph.setProperty("ic50",data[i][2])
+        graph_list.append(graph)
+    from phagraphnn.DataPreperer import DataPreparer
+    loader = DataPreparer(graph_list,3,property_string="ic50",mpn="gat",is_path=False)
+
+    from phagraphnn.PhaGatModel2 import PhaGatModel2 as gat2
+    from phagraphnn.PhaGatModel import PhaGatModel as gat
+    import tensorflow as tf
+
+    seq2 = tf.keras.Sequential([
+    tf.keras.layers.Dense(64, activation='relu', input_shape=(128,),name="first_layer"),
+    tf.keras.layers.Dense(32, activation='relu',name="second_layer"),
+    tf.keras.layers.Dense(1,activation= None)],name="output_NN")
+
+    seq = tf.keras.Sequential([
+    tf.keras.layers.Dense(16, activation='relu', input_shape=(32,),name="first_layer"),
+    tf.keras.layers.Dense(8, activation='relu',name="second_layer"),
+    tf.keras.layers.Dense(1,activation= None)],name="output_NN")
+
+    gat2 = gat2(hidden_dim=32,emb_dim=32,output_nn=seq2,merge='cat')
+    gat = gat(hidden_dim=32,emb_dim=32,output_nn=seq)
+    lr = 0.001
+    gat.compile(loss=tf.keras.losses.mse,
+                optimizer=tf.keras.optimizers.RMSprop(lr))
+    gat2.compile(loss=tf.keras.losses.mse,
+                optimizer=tf.keras.optimizers.RMSprop(lr))
+    rec = tf.keras.metrics.MeanAbsoluteError()
+    for batch in loader:
+        inputs,af,other = batch
+        gat(inputs)
+        gat2(inputs)
+        for epoch in range(0,10):
+            pred,loss = gat.train(inputs=inputs,outputs=af,learning_rate=lr)
+            pred2,loss2 = gat2.train(inputs=inputs,outputs=af,learning_rate=lr)
+            print("pred,loss",pred,loss)
+            print("pred2,loss2",pred2,loss2)
+            print("af",af)
+    assert(1==-1)
+    # from phagraphnn.PhaGatModel import PhaGatModel
+    # model = PhaGatModel()
+
+def test_PhaGru():
+    import phagraphnn.utilities as ut
+    from phagraphnn.PhaGraph import PhaGraph,PhaNode
+
+    data = ut.readChemblXls("./tests/data/CHE_3.xls")
+    graph_list = []
+    for i in range(0,len(data)):
+        graph = PhaGraph()
+        mol = ut.CDPLmolFromSmiles(data[i][1],True)
+        graph(ut.CDPLphaGenerator(None,mol,"lig_only"))
+        graph.setProperty("ic50",data[i][2])
+        graph_list.append(graph)
+    from phagraphnn.DataPreperer import DataPreparer
+    loader = DataPreparer(graph_list,3,property_string="ic50",mpn="gru",is_path=False)
+
+    from phagraphnn.PhaGruMPN import PhaGruMPN as mpn
+    import tensorflow as tf
+
+    seq = tf.keras.Sequential([
+    tf.keras.layers.Dense(16, activation='relu', input_shape=(32,),name="first_layer"),
+    tf.keras.layers.Dense(8, activation='relu',name="second_layer"),
+    tf.keras.layers.Dense(1,activation= None)],name="output_NN")
+
+    mpn = mpn(32,3,seq)
+    lr = 0.001
+    mpn.compile(loss=tf.keras.losses.mse,
+                optimizer=tf.keras.optimizers.RMSprop(lr))
+    rec = tf.keras.metrics.MeanAbsoluteError()
+    for batch in loader:
+        inputs,af,other = batch
+        mpn(inputs)
+        for epoch in range(0,10):
+            pred,loss = mpn.train(inputs=inputs,outputs=af,learning_rate=lr)
+            print("pred,loss",pred,loss)
+            print("af",af)
+    assert(1==-1)

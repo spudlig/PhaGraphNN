@@ -1,3 +1,6 @@
+import logging
+log = logging.getLogger(__name__)
+
 import CDPL.Chem as Chem
 import CDPL.Biomol as Biomol
 import CDPL.Pharm as Pharm
@@ -55,7 +58,7 @@ class PhaGraph():
         (string): containing the "property_name" property with property_name \n
         (ValueError): graph does not contain "property_name"
         '''
-        if property_name in properties.keys():
+        if property_name in self.properties.keys():
             return self.properties[property_name]
         else:
             raise ValueError("Property name",property_name,"does not exist. Only those names are present:",properties.keys())
