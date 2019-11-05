@@ -161,8 +161,6 @@ def test_gatNN():
             print("pred,loss",pred,loss)
             print("pred2,loss2",pred2,loss2)
             print("af",af)
-    # from phagraphnn.PhaGatModel import PhaGatModel
-    # model = PhaGatModel()
 
 def test_PhaGru():
     import phagraphnn.utilities as ut
@@ -222,8 +220,6 @@ def test_PhaGru():
             pred,loss = gru.train(inputs=inputs,outputs=af,learning_rate=lr)
             pred,loss = gru2.train(inputs=inputs,outputs=af,learning_rate=lr)
             pred,loss = gru3.train(inputs=inputs,outputs=af,learning_rate=lr)
-            print("pred,loss",pred,loss)
-            print("af",af)
 
 def test_PhaGat2():
     import phagraphnn.utilities as ut
@@ -258,6 +254,3 @@ def test_PhaGat2():
         gat(inputs)
         for epoch in range(0,10):
             pred,loss = gat.train(inputs=inputs,outputs=af,learning_rate=lr)
-            print("pred,loss",pred,loss)
-            print("af",af)
-    assert(1==-1)
