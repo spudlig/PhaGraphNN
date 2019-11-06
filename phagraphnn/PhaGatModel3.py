@@ -6,13 +6,13 @@ from phagraphnn.utilities import indexSelect,getConnectedFeatures, updateConnect
 import logging
 log = logging.getLogger(__name__)
 
-class PhaGatModel2(phagraphnn.PhaGatModel):
+class PhaGatModel3(phagraphnn.PhaGatModel):
     '''
     This class uses a GAT as an update function. And does embedding over
     the origin feature vector plus the distance.
     Moreover, it uses num_heads of GAT networks (all different).
     The output of each layer can be either concatonated (merge='cat'), multiplied (merge='mul'),
-    added (merge='add') or just left as is (merge='none') with the original input.
+    added (merge='add') or just left as is (merge='none') with all of the previous inputs.
     '''
 
     def __init__(self, hidden_dim = 8, out_dim = 10, dropout_rate = 0.001 , num_heads = 4,
@@ -30,6 +30,7 @@ class PhaGatModel2(phagraphnn.PhaGatModel):
             for head in range(1,self.num_heads):
                 self.heads.append(GATLayer(self.hidden_dim*head,self.out_dim,self.dropout_rate))
 
+
     def call(self, x_batch):
 
         ### GAT with embedding:
@@ -39,13 +40,12 @@ class PhaGatModel2(phagraphnn.PhaGatModel):
         message = tf.concat([feature_dist_graph,rij_dist_pairs ], axis=1)
         message = self.dist_embedding(message)
 
-        target_features = tf.concat([[np.zeros(tf.shape(target_features_orig)[1])],target_features_orig],axis=0)
-        target_features_orig = tf.concat([[np.zeros(tf.shape(target_features_orig)[1])],target_features_orig],axis=0)
+        target_features_new = tf.concat([[np.zeros(tf.shape(target_features_orig)[1])],target_features_orig],axis=0)
         for i in range(0,self.num_heads-1):
-            multible_entry_f_lig = getConnectedFeatures(target_features,start_end_env)
+            multible_entry_f_lig = getConnectedFeatures(target_features_new,start_end_env)
             target_features = self.heads[i](multible_entry_f_lig,message,b_scope)
-            target_features = self._update_target_features(target_features,target_features_orig)
-            message = updateConnectedDict(target_features,scope_update_lig,scope_update)
+            target_features_new = self._update_target_features(target_features,target_features_new)
+            message = updateConnectedDict(target_features_new,scope_update_lig,scope_update)
 
         cmp_enc = tf.gather(target_features,indices=(l_scope),axis=0)
         mol_vecs = tf.reduce_sum(cmp_enc,1)

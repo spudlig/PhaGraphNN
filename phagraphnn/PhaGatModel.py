@@ -108,6 +108,24 @@ class PhaGatModel(tf.keras.Model):
         current_loss = tf.reduce_mean(loss(outputs,predictions))
         return predictions,current_loss
 
+    def _update_target_features(self,features_new,features_old):
+        '''
+        PRIVATE METHOD \n
+        depending on the self.merge flag, how sould the different
+        outcomes of the GAT layer be processed.
+        '''
+        if self.merge == 'cat':
+            return tf.concat([features_new,features_old],axis=1)
+        if self.merge == 'mul':
+            return tf.math.multiply([features_new,features_old])
+        if self.merge == 'add':
+            return tf.math.add([features_new,features_old])
+        if self.merge == 'none':
+            return features_new
+        
+        log.error("Please define a valid option ('cat','mul','add' or 'none') for"+
+                "the PhaGatModel2 merge flat. currently:",self.merge)
+
 
     @staticmethod
     def tensorize(graph_batch,property_name, cutoff=9.0):
