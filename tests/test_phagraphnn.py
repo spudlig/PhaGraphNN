@@ -254,3 +254,37 @@ def test_PhaGat2():
         gat(inputs)
         for epoch in range(0,10):
             pred,loss = gat.train(inputs=inputs,outputs=af,learning_rate=lr)
+
+def test_PhaGat2_classification():
+    import phagraphnn.utilities as ut
+    from phagraphnn.PhaGraph import PhaGraph,PhaNode
+
+    data = ut.readChemblXls("./tests/data/CHE_3.xls")
+    graph_list = []
+    for i in range(0,len(data)):
+        graph = PhaGraph()
+        mol = ut.CDPLmolFromSmiles(data[i][1],True)
+        graph(ut.CDPLphaGenerator(None,mol,"lig_only"))
+        graph.setProperty("ic50",(0,1))
+        graph_list.append(graph)
+    from phagraphnn.DataPreperer import DataPreparer
+    loader = DataPreparer(graph_list,3,property_string="ic50",mpn="gru",is_path=False)
+
+    from phagraphnn.PhaGatModel2 import PhaGatModel2 as gat
+    import tensorflow as tf
+
+    seq = tf.keras.Sequential([
+    tf.keras.layers.Dense(16, activation='relu', input_shape=(128,),name="first_layer"),
+    tf.keras.layers.Dense(8, activation='relu',name="second_layer"),
+    tf.keras.layers.Dense(2,activation= None)],name="output_NN")
+
+    gat = gat(hidden_dim=32,output_nn=seq,regression = False)
+    lr = 0.001
+    gat.compile(loss=tf.keras.losses.BinaryCrossentropy(),
+                optimizer=tf.keras.optimizers.RMSprop(lr))
+    rec = tf.keras.metrics.MeanAbsoluteError()
+    for batch in loader:
+        inputs,af,other = batch
+        gat(inputs)
+        for epoch in range(0,10):
+            pred,loss = gat.train(inputs=inputs,outputs=af,learning_rate=lr)

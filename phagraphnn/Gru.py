@@ -1,4 +1,5 @@
-
+import logging
+log = logging.getLogger(__name__)
 import tensorflow as tf
 from collections import deque
 from phagraphnn.utilities import indexSelect, getConnectedFeatures

@@ -1,16 +1,3 @@
 [
-  "tests/test_phagraphnn.py::test_equ",
-  "tests/test_phagraphnn.py::test_phagraphNN_imported",
-  "tests/test_phagraphnn.py::test_utilities_readChemblXls_method",
-  "tests/test_phagraphnn.py::test_phagraphNN_generateFromSmiles_file",
-  "tests/test_phagraphnn.py::test_phagraphNN_generateFromSmiles_smile",
-  "tests/test_phagraphnn.py::test_phagraphNN_generateFromSDF",
-  "tests/test_phagraphnn.py::test_phagraphNN_generateFromPDB_FILE",
-  "tests/test_phagraphnn.py::test_phagraphNN_generateFromPDB_URL",
-  "tests/test_phagraphnn.py::test_phagraphNN_generatePha",
-  "tests/test_phagraphnn.py::test_phagraphNN_generate_protein_phas",
-  "tests/test_phagraphnn.py::test_phagraphNN",
-  "tests/test_phagraphnn.py::test_gatNN",
-  "tests/test_phagraphnn.py::test_PhaGru",
   "tests/test_phagraphnn.py::test_PhaGat2"
 ]

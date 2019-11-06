@@ -1,6 +1,8 @@
 import os, random
+import logging
+log = logging.getLogger(__name__)
 import pickle as pickle
-from phagraphnn.PhaGAT import *
+from phagraphnn.PhaGatModel import *
 from phagraphnn.PhaGruMPN import *
 import time
 
@@ -69,6 +71,6 @@ class GraphDataset():
 
 def tensorize(graph_batch,mpn,property_string):
     if mpn == "gat":
-        return GATLayer.tensorize(graph_batch,property_string)
+        return PhaGatModel.tensorize(graph_batch,property_string)
     if mpn == "gru":
         return PhaGruMPN.tensorize(graph_batch,property_string)

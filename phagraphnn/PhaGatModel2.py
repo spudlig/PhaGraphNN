@@ -2,7 +2,6 @@ import tensorflow as tf
 import numpy as np
 import phagraphnn.PhaGatModel
 from phagraphnn.PhaGAT import GATLayer as GATLayer
-from phagraphnn.PhaGAT import FEATURE_FDIM,ALL_FDIM
 from phagraphnn.utilities import indexSelect,getConnectedFeatures, updateConnectedDict
 import logging
 log = logging.getLogger(__name__)
@@ -13,13 +12,14 @@ class PhaGatModel2(phagraphnn.PhaGatModel):
     the origin feature vector plus the distance.
     Moreover, it uses num_heads of GAT networks (all different).
     The output of each layer can be either concated (merge='cat'), multiplied (merge='mul'),
-    added (merge='add') or just left as is (merge='none').
+    added (merge='add') or just left as is (merge='none') with the original input.
     '''
 
     def __init__(self, hidden_dim = 8, out_dim = 10, dropout_rate = 0.001 , num_heads = 4,
-                merge='cat',emb_initializer = tf.random_uniform_initializer(0.1,0.9),output_nn=None):
+                merge='cat',emb_initializer = tf.random_uniform_initializer(0.1,0.9),output_nn=None,
+                regression = False):
         super().__init__(hidden_dim = hidden_dim, out_dim = out_dim, dropout_rate = dropout_rate ,
-                emb_initializer = emb_initializer,output_nn=output_nn)
+                emb_initializer = emb_initializer,output_nn=output_nn,regression = regression)
         self.num_heads = num_heads
         self.merge = merge
 
@@ -39,9 +39,10 @@ class PhaGatModel2(phagraphnn.PhaGatModel):
         message = tf.concat([feature_dist_graph,rij_dist_pairs ], axis=1)
         message = self.dist_embedding(message)
 
+        target_features = tf.concat([[np.zeros(tf.shape(target_features_orig)[1])],target_features_orig],axis=0)
         target_features_orig = tf.concat([[np.zeros(tf.shape(target_features_orig)[1])],target_features_orig],axis=0)
         for i in range(0,self.num_heads-1):
-            multible_entry_f_lig = getConnectedFeatures(target_features_orig,start_end_env)
+            multible_entry_f_lig = getConnectedFeatures(target_features,start_end_env)
             target_features = self.heads[i](multible_entry_f_lig,message,b_scope)
             target_features = self._update_target_features(target_features,target_features_orig)
             message = updateConnectedDict(target_features,scope_update_lig,scope_update)
@@ -50,8 +51,10 @@ class PhaGatModel2(phagraphnn.PhaGatModel):
         mol_vecs = tf.reduce_sum(cmp_enc,1)
 
         try:
-            if self.output_nn:
+            if self.output_nn and self.regression:
                 return tf.reshape(self.output_nn(mol_vecs),[-1])
+            elif self.output_nn:
+                return self.output_nn(mol_vecs)
             return mol_vecs 
         except Exception as e:
             log.error('There seems to be an issue with the input dimensions.'+

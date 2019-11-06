@@ -1,3 +1,5 @@
+import logging
+log = logging.getLogger(__name__)
 import tensorflow as tf
 import numpy as np
 from phagraphnn.utilities import indexSelect, createVar, getConnectedFeatures, updateConnectedDict

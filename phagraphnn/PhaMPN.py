@@ -1,12 +1,8 @@
 import tensorflow as tf
 import numpy as np
-
-ELEM_LIST =[0,1,2,3,4,5,6,7] #0=unk,1=H,2=AR,3=NI,4=PI, 5=HBD,6=HBA,7=XV
-#ELEM_LIST =[1,2,3,4,5,6,'unk']
-FEATURE_FDIM = len(ELEM_LIST)
-EDGE_FDIM = 1
-ALL_FDIM = FEATURE_FDIM+EDGE_FDIM
-MAX_NB = 50
+from phagraphnn.PhaGruMPN import *
+import logging
+log = logging.getLogger(__name__)
 
 def onek_encoding_unk(x, allowable_set):
     if x not in allowable_set:
