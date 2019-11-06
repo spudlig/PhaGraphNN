@@ -11,9 +11,20 @@ import sys
 
 logging.basicConfig(stream=sys.stdout, level=logging.ERROR)
 
-from .utilities import *
-from .DataPreperer import *
-from .PhaGAT import *
 from .PhaGatModel import *
-from .PhaMPN import *
+from .PhaGatModel2 import *
+from .PhaGatModel3 import *
 from .PhaGraph import *
+from .PhaGruMPN import *
+from .PhaGruMPN2 import *
+from .PhaGruMPN3 import *
+from .DataPreperer import *
+from .utilities import *
+
+# from .PhaMPN import *
+# from .utilities import *
+# from .DataPreperer import *
+# from .PhaGAT import *
+# from .PhaGatModel import *
+# from .PhaMPN import *
+# from .PhaGraph import *
