@@ -127,7 +127,7 @@ def test_gatNN():
         graph.setProperty("ic50",data[i][2])
         graph_list.append(graph)
     from phagraphnn.DataPreperer import DataPreparer
-    loader = DataPreparer(graph_list,3,property_string="ic50",mpn="gat",is_path=False)
+    loader = DataPreparer(graph_list,3,property_string="ic50",mpn="gat")
 
     from phagraphnn.PhaGatModel2 import PhaGatModel2 as gat2
     from phagraphnn.PhaGatModel import PhaGatModel as gat
@@ -175,7 +175,7 @@ def test_PhaGru():
         graph.setProperty("ic50",data[i][2])
         graph_list.append(graph)
     from phagraphnn.DataPreperer import DataPreparer
-    loader = DataPreparer(graph_list,3,property_string="ic50",mpn="gru",is_path=False)
+    loader = DataPreparer(graph_list,3,property_string="ic50",mpn="gru")
 
     from phagraphnn.PhaGruMPN import PhaGruMPN as gru
     from phagraphnn.PhaGruMPN2 import PhaGruMPN2 as gru2
@@ -234,7 +234,7 @@ def test_PhaGat2():
         graph.setProperty("ic50",data[i][2])
         graph_list.append(graph)
     from phagraphnn.DataPreperer import DataPreparer
-    loader = DataPreparer(graph_list,3,property_string="ic50",mpn="gru",is_path=False)
+    loader = DataPreparer(graph_list,3,property_string="ic50",mpn="gru")
 
     from phagraphnn.PhaGatModel2 import PhaGatModel2 as gat
     import tensorflow as tf
@@ -268,7 +268,7 @@ def test_PhaGat3():
         graph.setProperty("ic50",data[i][2])
         graph_list.append(graph)
     from phagraphnn.DataPreperer import DataPreparer
-    loader = DataPreparer(graph_list,3,property_string="ic50",mpn="gru",is_path=False)
+    loader = DataPreparer(graph_list,3,property_string="ic50",mpn="gru")
 
     from phagraphnn.PhaGatModel3 import PhaGatModel3 as gat
     import tensorflow as tf
@@ -302,7 +302,7 @@ def test_PhaGat2_classification():
         graph.setProperty("ic50",(0,1))
         graph_list.append(graph)
     from phagraphnn.DataPreperer import DataPreparer
-    loader = DataPreparer(graph_list,3,property_string="ic50",mpn="gru",is_path=False)
+    loader = DataPreparer(graph_list,3,property_string="ic50",mpn="gru")
 
     from phagraphnn.PhaGatModel2 import PhaGatModel2 as gat
     import tensorflow as tf
