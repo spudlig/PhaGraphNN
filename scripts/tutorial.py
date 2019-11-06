@@ -83,9 +83,7 @@ for i in range(0,len(data)):
 # the mpn options are currently either 'gru' or 'mpn'. #
 loader = DataPreparer(graph_list,3,property_string="ic50",mpn="mpn")
 
-##################
-##################
-###### REGRESSION
+
 #%%
 ### load data
 data = ut.readChemblXls("./tests/data/CHE_3.xls")
