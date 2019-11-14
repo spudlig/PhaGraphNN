@@ -21,14 +21,14 @@ class DataPreparer(object):
     OUTPUT: \n
     (GraphDataset): class that needs to be iterated over in order to get each batch
     '''
-    def __init__(self, data_folder, batch_size,property_string, num_workers=4, shuffle=True,mpn="mpn"):
+    def __init__(self, data_folder, batch_size,property_string, num_workers=4, shuffle=True,mpn="mpn",is_path=False):
         self.data_folder = data_folder
         self.data_files = []
-        # self.is_path = is_path
-        # if self.is_path:
-        #     self.data_files = [fn for fn in os.listdir(data_folder)]
-        # else:
-        self.data_files = data_folder
+        self.is_path = is_path
+        if self.is_path:
+            self.data_files = [fn for fn in os.listdir(data_folder)]
+        else:
+            self.data_files = data_folder
         self.batch_size = batch_size
         self.num_workers = num_workers
         self.shuffle = shuffle
@@ -36,19 +36,20 @@ class DataPreparer(object):
         self.property_string = property_string
 
     def __iter__(self):
-        # if self.is_path:
-        #     for fn in self.data_files:
-        #         fn = os.path.join(self.data_folder, fn)
-        #         with open(fn,'rb') as f:
-        #             data = pickle.load(f)
-        #         dataset = self._getDataset(data)
-        #         for b in dataset:
-        #             yield b
-        #         del data, dataset
-        #     else:
-        #         return
-        # else:
-        dataset = self._getDataset(self.data_files)
+        dataset = None
+        if self.is_path:
+            for fn in self.data_files:
+                fn = os.path.join(self.data_folder, fn)
+                with open(fn,'rb') as f:
+                    data = pickle.load(f)
+                dataset = self._getDataset(data)
+                for b in dataset:
+                    yield b
+                del data, dataset
+            else:
+                return
+        else:
+            dataset = self._getDataset(self.data_files)
         for b in dataset:
             yield b
         del dataset

@@ -4,6 +4,7 @@ log = logging.getLogger(__name__)
 import numpy as np
 import xlrd
 import os
+import pickle
 
 import CDPL.Chem as Chem
 import CDPL.Biomol as Biomol
@@ -101,6 +102,33 @@ def molFromSdf(sdf_path,conformation):
         else:
             return m
 
+def pickleGraphs(path_to_folder,data,num_splits):
+    ''' 
+    Pickles the input data list into the set folder and splits it according
+    to the num_splits defined. \n
+    Input: \n
+    path_to_folder (string): path to the output folder \n
+    data (list): list of graph instances \n
+    num_splits (int): into how many chuncks the data should be split \n
+    Return: \n
+    (boolean): True, if the pickle worked, False otherwise
+    '''
+    try:
+        if not os.path.isdir(path_to_folder):
+            log.error("Not a valid path:"+path_to_folder,exc_info=True)
+            return False
+        le = (len(data) + num_splits - 1) / num_splits
+        for split_id in range(num_splits):
+            st = split_id * le
+            sub_data = data[int(st) : int(st + le)]
+
+            with open(path_to_folder+'graphs-%d.pkl' % split_id, 'wb') as f:
+                pickle.dump(sub_data, f, pickle.HIGHEST_PROTOCOL)
+    except Exception as e:
+        log.error("saving issue",exc_info=True)
+        return False
+
+    return True
 
 def CDPLmolFromSmiles(smiles_path,conformation):
     ''' 

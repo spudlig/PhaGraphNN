@@ -152,7 +152,6 @@ class PhaGatModel(tf.keras.Model):
         update_n_features = 0
         graph_nr = 0
         for graph in graph_batch:
-            # affinities.append(graph.affinity)
             properties.append(graph.getProperty(property_name))
             names.append(graph.getName())
             pha = graph.nodes
@@ -171,8 +170,6 @@ class PhaGatModel(tf.keras.Model):
                     distance = graph.distance(feature,other_feature)
                     if distance > cutoff:continue
                     rij_dist_pairs.append(tf.convert_to_tensor(tf.cast(distance,tf.float32)))
-                    # inter = copy.copy(other_feature.feature_type)
-                    # inter.append(distance)
                     feature_dist_graph.append(other_feature.feature_type)
                     scope_update.append(str(other_feature.index)+"_"+str(graph_nr))
                     n_other_f +=1

@@ -11,6 +11,7 @@
   "tests/test_phagraphnn.py::test_phagraphNN_generate_protein_phas",
   "tests/test_phagraphnn.py::test_phagraphNN",
   "tests/test_phagraphnn.py::test_gatNN",
+  "tests/test_phagraphnn.py::test_DataPrepera_path",
   "tests/test_phagraphnn.py::test_PhaGru",
   "tests/test_phagraphnn.py::test_PhaGat2",
   "tests/test_phagraphnn.py::test_PhaGat3",

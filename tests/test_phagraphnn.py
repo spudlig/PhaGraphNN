@@ -126,7 +126,7 @@ def test_gatNN():
         graph(ut.CDPLphaGenerator(None,mol,"lig_only"))
         graph.setProperty("ic50",data[i][2])
         graph_list.append(graph)
-    from phagraphnn.DataPreperer import DataPreparer
+    from phagraphnn.DataPreparer import DataPreparer
     loader = DataPreparer(graph_list,3,property_string="ic50",mpn="gat")
 
     from phagraphnn.PhaGatModel2 import PhaGatModel2 as gat2
@@ -147,9 +147,9 @@ def test_gatNN():
     gat = gat(hidden_dim=32,output_nn=seq)
     lr = 0.001
     gat.compile(loss=tf.keras.losses.mse,
-                optimizer=tf.keras.optimizers.RMSprop(lr))
+                optimizer=tf.keras.optimizers.Adam(lr))
     gat2.compile(loss=tf.keras.losses.mse,
-                optimizer=tf.keras.optimizers.RMSprop(lr))
+                optimizer=tf.keras.optimizers.Adam(lr))
     rec = tf.keras.metrics.MeanAbsoluteError()
     for batch in loader:
         inputs,af,other = batch
@@ -158,9 +158,42 @@ def test_gatNN():
         for epoch in range(0,10):
             pred,loss = gat.train(inputs=inputs,outputs=af,learning_rate=lr)
             pred2,loss2 = gat2.train(inputs=inputs,outputs=af,learning_rate=lr)
-            print("pred,loss",pred,loss)
-            print("pred2,loss2",pred2,loss2)
-            print("af",af)
+
+def test_DataPrepera_path():
+    import phagraphnn.utilities as ut
+    from phagraphnn.PhaGraph import PhaGraph,PhaNode
+
+    data = ut.readChemblXls("./tests/data/CHE_3.xls")
+    graph_list = []
+    for i in range(0,len(data)):
+        graph = PhaGraph()
+        mol = ut.CDPLmolFromSmiles(data[i][1],True)
+        graph(ut.CDPLphaGenerator(None,mol,"lig_only"))
+        graph.setProperty("ic50",data[i][2])
+        graph_list.append(graph)
+    from phagraphnn.DataPreparer import DataPreparer
+    assert(ut.pickleGraphs("./tests/data/pickle/",graph_list,2)==True)
+    loader = DataPreparer("./tests/data/pickle/",1,property_string="ic50",mpn="gat",is_path=True)
+
+    from phagraphnn.PhaGatModel import PhaGatModel as gat
+    import tensorflow as tf
+
+    seq = tf.keras.Sequential([
+    tf.keras.layers.Dense(16, activation='relu', input_shape=(32,),name="first_layer"),
+    tf.keras.layers.Dense(8, activation='relu',name="second_layer"),
+    tf.keras.layers.Dense(1,activation= None)],name="output_NN")
+
+    gat = gat(hidden_dim=32,output_nn=seq)
+    lr = 0.001
+    gat.compile(loss=tf.keras.losses.mse,
+                optimizer=tf.keras.optimizers.Adam(lr))
+    rec = tf.keras.metrics.MeanAbsoluteError()
+    for batch in loader:
+        inputs,af,other = batch
+        gat(inputs)
+        for epoch in range(0,10):
+            pred,loss = gat.train(inputs=inputs,outputs=af,learning_rate=lr)
+
 
 def test_PhaGru():
     import phagraphnn.utilities as ut
@@ -174,7 +207,7 @@ def test_PhaGru():
         graph(ut.CDPLphaGenerator(None,mol,"lig_only"))
         graph.setProperty("ic50",data[i][2])
         graph_list.append(graph)
-    from phagraphnn.DataPreperer import DataPreparer
+    from phagraphnn.DataPreparer import DataPreparer
     loader = DataPreparer(graph_list,3,property_string="ic50",mpn="gru")
 
     from phagraphnn.PhaGruMPN import PhaGruMPN as gru
@@ -203,13 +236,13 @@ def test_PhaGru():
 
     lr = 0.001
     gru.compile(loss=tf.keras.losses.mse,
-                optimizer=tf.keras.optimizers.RMSprop(lr))
+                optimizer=tf.keras.optimizers.Adam(lr))
 
     gru2.compile(loss=tf.keras.losses.mse,
-                optimizer=tf.keras.optimizers.RMSprop(lr))
+                optimizer=tf.keras.optimizers.Adam(lr))
 
     gru3.compile(loss=tf.keras.losses.mse,
-                optimizer=tf.keras.optimizers.RMSprop(lr))
+                optimizer=tf.keras.optimizers.Adam(lr))
     rec = tf.keras.metrics.MeanAbsoluteError()
     for batch in loader:
         inputs,af,other = batch
@@ -233,7 +266,7 @@ def test_PhaGat2():
         graph(ut.CDPLphaGenerator(None,mol,"lig_only"))
         graph.setProperty("ic50",data[i][2])
         graph_list.append(graph)
-    from phagraphnn.DataPreperer import DataPreparer
+    from phagraphnn.DataPreparer import DataPreparer
     loader = DataPreparer(graph_list,3,property_string="ic50",mpn="gru")
 
     from phagraphnn.PhaGatModel2 import PhaGatModel2 as gat
@@ -247,7 +280,7 @@ def test_PhaGat2():
     gat = gat(hidden_dim=32,output_nn=seq)
     lr = 0.001
     gat.compile(loss=tf.keras.losses.mse,
-                optimizer=tf.keras.optimizers.RMSprop(lr))
+                optimizer=tf.keras.optimizers.Adam(lr))
     rec = tf.keras.metrics.MeanAbsoluteError()
     for batch in loader:
         inputs,af,other = batch
@@ -267,7 +300,7 @@ def test_PhaGat3():
         graph(ut.CDPLphaGenerator(None,mol,"lig_only"))
         graph.setProperty("ic50",data[i][2])
         graph_list.append(graph)
-    from phagraphnn.DataPreperer import DataPreparer
+    from phagraphnn.DataPreparer import DataPreparer
     loader = DataPreparer(graph_list,3,property_string="ic50",mpn="gru")
 
     from phagraphnn.PhaGatModel3 import PhaGatModel3 as gat
@@ -281,7 +314,7 @@ def test_PhaGat3():
     gat = gat(hidden_dim=32,output_nn=seq)
     lr = 0.001
     gat.compile(loss=tf.keras.losses.mse,
-                optimizer=tf.keras.optimizers.RMSprop(lr))
+                optimizer=tf.keras.optimizers.Adam(lr))
     rec = tf.keras.metrics.MeanAbsoluteError()
     for batch in loader:
         inputs,af,other = batch
@@ -301,8 +334,8 @@ def test_PhaGat2_classification():
         graph(ut.CDPLphaGenerator(None,mol,"lig_only"))
         graph.setProperty("ic50",(0,1))
         graph_list.append(graph)
-    from phagraphnn.DataPreperer import DataPreparer
-    loader = DataPreparer(graph_list,3,property_string="ic50",mpn="gru")
+    from phagraphnn.DataPreparer import DataPreparer
+    loader = DataPreparer(graph_list,3,property_string="ic50",mpn="gru",is_path=False)
 
     from phagraphnn.PhaGatModel2 import PhaGatModel2 as gat
     import tensorflow as tf
@@ -315,7 +348,7 @@ def test_PhaGat2_classification():
     gat = gat(hidden_dim=32,output_nn=seq,regression = False)
     lr = 0.001
     gat.compile(loss=tf.keras.losses.BinaryCrossentropy(),
-                optimizer=tf.keras.optimizers.RMSprop(lr))
+                optimizer=tf.keras.optimizers.Adam(lr))
     rec = tf.keras.metrics.MeanAbsoluteError()
     for batch in loader:
         inputs,af,other = batch

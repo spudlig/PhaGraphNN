@@ -21,13 +21,15 @@ class PhaNode():
     This class represents a feature of the pharmacophore graph - if there are
     more than one feature at the same position, other_feature_types is used.
     '''
+    __slots__=("coords","index","feature_type")
     def __init__(self):
         self.feature_type = []
         self.coords = np.array([0.0, 0.0, 0.0])
         self.index = 0 # if there are overlapping features, the index of either one of them is -1
 
 class PhaGraph():
-    ''' This class is the pharmacophore graph class.
+    ''' 
+    This class is the pharmacophore graph class.
     It can be utilized to represent any kind of Pharmacophore.
     Upon initialization, there is no calculations being done. If you
     want to generate the graph, use the call method. \n
@@ -36,7 +38,7 @@ class PhaGraph():
     features within a certain range are all interconnected.
 
     '''
-    def __init__(self):
+    def __init__(self,merge_distance_threashold=0.4):
         self.nodes = list() # PhaNode objects
         self.edges = set() # Set of all pairwise connected features
         self.edge_weights = dict() # the distance between the center of feature1 to feature2
@@ -44,7 +46,7 @@ class PhaGraph():
         self.properties = dict()
         self.name = None
 
-        self.merge_distance_threashold = 0.4 # every pairwise feature set below that threshold is being reduced to one "new" feature type
+        self.merge_distance_threashold = merge_distance_threashold # every pairwise feature set below that threshold is being reduced to one "new" feature type
 
     def __call__(self,pharmacophore):
         self._generateNodes(pharmacophore)
@@ -99,8 +101,8 @@ class PhaGraph():
     def distance(self, node1, node2):
         '''
         Input \n
-        node1 (AtomNode): origin node \n
-        node2 (AtomNode): target node \n
+        node1 (PhaNode): origin node \n
+        node2 (PhaNode): target node \n
         Returns \n
         (float): the distance between origin node1 and target node2
         '''
@@ -193,5 +195,5 @@ class PhaGraph():
         mol (CDPL BasicMolecule): molecule the edges are calculated for
         '''
         if x not in allowable_set:
-            x = allowable_set[-1]
+            x = allowable_set[0]
         return list(map(lambda s: float(x == s), allowable_set))

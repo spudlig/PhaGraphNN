@@ -18,7 +18,7 @@ from .PhaGraph import *
 from .PhaGruMPN import *
 from .PhaGruMPN2 import *
 from .PhaGruMPN3 import *
-from .DataPreperer import *
+from .DataPreparer import *
 from .utilities import *
 
 # from .PhaMPN import *
